@@ -1,5 +1,6 @@
 import 'package:cspc_recog/calendar/main.dart';
 import 'package:cspc_recog/attendance/mainPage.dart';
+import 'package:cspc_recog/board/screen/screen_home.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -28,7 +29,7 @@ class MainApp extends StatelessWidget {
 }
 
 class MyMainPage extends StatefulWidget {
-  MyMainPage({Key? key, required this.title}) : super(key: key);
+  MyMainPage({Key key, this.title}) : super(key: key);
   final String title;
 
   @override
@@ -38,7 +39,7 @@ class MyMainPage extends StatefulWidget {
 class _MyMainPageState extends State<MyMainPage> {
   int _currentIndex = 0;
 
-  final List<Widget> _children = [AttendancePage(), CalendarPage()];
+  final List<Widget> _children = [AttendancePage(),BoardPage(),CalendarPage()];
   void _onTap(int index) {
     setState(() {
       _currentIndex = index;

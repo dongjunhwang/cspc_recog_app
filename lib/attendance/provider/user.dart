@@ -15,10 +15,10 @@ class GetUserListProvider extends ChangeNotifier {
 }
 
 class UserModel {
-  final int? userId;
-  final String? username;
-  final bool? isOnline;
-  final DateTime? lastVisitTime;
+  final int userId;
+  final String username;
+  final bool isOnline;
+  final DateTime lastVisitTime;
 
   UserModel({
     this.userId,

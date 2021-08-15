@@ -1,6 +1,6 @@
 class Event {
   final String title;
-  Event({required this.title});
+  Event({this.title});
 
   String toString() => this.title;
 }

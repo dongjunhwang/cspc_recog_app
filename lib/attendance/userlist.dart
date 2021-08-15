@@ -52,7 +52,7 @@ class _UserListPageState extends State<UserListPage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text(user.username!),
+              Text(user.username),
               Text("online : " + user.isOnline.toString()),
               //Text(user.lastVisitTime.toString())
             ],
