@@ -1,4 +1,4 @@
-import 'package:cspc_recog/calendar/calendar.dart';
+import 'package:cspc_recog/calendar/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
@@ -68,32 +68,5 @@ class _MyMainPageState extends State<MyMainPage> {
                 title: Text('Calendar'),
               )
             ]));
-  }
-}
-
-
-class CalendarPage extends StatelessWidget {
-  final String title = "Calendar";
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Column(
-              children: [
-                ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(context,
-                          MaterialPageRoute(builder: (context) => Calendar()));
-                    },
-                    child: Text('calendar'))
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
   }
 }
