@@ -6,6 +6,8 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:cspc_recog/board/model/api_adapter.dart';
 
+import 'package:cspc_recog/urls.dart';
+
 
 class BoardPage extends StatefulWidget{
   @override
@@ -21,7 +23,8 @@ class _HomeScreenState extends State<BoardPage>{
     setState((){
       isLoading = true;
     });
-    final response = await http.get(Uri.parse('https://lsmin1021.pythonanywhere.com/api/post/'));
+    //final response = await http.get(Uri.parse('https://lsmin1021.pythonanywhere.com/api/post/'));
+    final response = await http.get(Uri.parse(UrlPrefix.urls+'api/post/'));
     if(response.statusCode == 200) {
       setState(() {
         posts = parsePosts(utf8.decode(response.bodyBytes));

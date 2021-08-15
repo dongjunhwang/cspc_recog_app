@@ -9,6 +9,8 @@ import 'package:flutter_swiper/flutter_swiper.dart';
 
 import 'package:http/http.dart' as http;
 
+import 'package:cspc_recog/urls.dart';
+
 class ListScreen extends StatefulWidget{
   List<PostList> posts;
 
@@ -28,7 +30,8 @@ class _ListScreenState extends State<ListScreen>{
       isLoading = true;
     });
     print(pk.toString());
-    final response = await http.get(Uri.parse('https://lsmin1021.pythonanywhere.com/api/post/'+pk.toString()));
+    //final response = await http.get(Uri.parse('https://lsmin1021.pythonanywhere.com/api/post/'+pk.toString()));
+    final response = await http.get(Uri.parse(UrlPrefix.urls+'api/post/'+pk.toString()));
     if(response.statusCode == 200) {
       setState(() {
         comments = parseComments(utf8.decode(response.bodyBytes));

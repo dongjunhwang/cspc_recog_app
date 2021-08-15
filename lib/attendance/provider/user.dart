@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:cspc_recog/urls.dart';
 
 class GetUserListProvider extends ChangeNotifier {
   List<UserModel> userList = [];
@@ -40,7 +41,7 @@ Future<List<UserModel>> getUserList(context) async {
   List<UserModel> userList = [];
   try {
     final response = await http.get(
-      Uri.parse("http://cocopam.hopto.org:8081/users"),
+      Uri.parse(UrlPrefix.urls + "users/"),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
