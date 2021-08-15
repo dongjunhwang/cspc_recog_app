@@ -1,4 +1,4 @@
-import 'package:cspc_recog/calendar/main.dart';
+import 'package:cspc_recog/calendar/calendar.dart';
 import 'package:cspc_recog/attendance/mainPage.dart';
 import 'package:cspc_recog/board/screen/screen_home.dart';
 
@@ -39,7 +39,8 @@ class MyMainPage extends StatefulWidget {
 class _MyMainPageState extends State<MyMainPage> {
   int _currentIndex = 0;
 
-  final List<Widget> _children = [AttendancePage(),BoardPage(),CalendarPage()];
+  final List<Widget> _children = [AttendancePage(),BoardPage(),Calendar()];
+  final List _title = ["Attendance", "Board", "Calendar"];
   void _onTap(int index) {
     setState(() {
       _currentIndex = index;
@@ -50,7 +51,7 @@ class _MyMainPageState extends State<MyMainPage> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text(widget.title),
+          title: Text(_title[_currentIndex]),
         ),
         body: _children[_currentIndex],
         bottomNavigationBar: BottomNavigationBar(

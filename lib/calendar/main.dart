@@ -1,5 +1,6 @@
 import 'package:cspc_recog/calendar/calendar.dart';
 import 'package:flutter/material.dart';
+/*
 class CalendarPage extends StatelessWidget {
   final String title = "Calendar";
   @override
@@ -25,3 +26,4 @@ class CalendarPage extends StatelessWidget {
     );
   }
 }
+ */

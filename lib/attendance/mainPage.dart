@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+//TODO : remove user list button (바로 User list를 볼 수 있도록 하기)
 class AttendancePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {

@@ -46,11 +46,13 @@ class _HomeScreenState extends State<BoardPage>{
     return SafeArea(
       child: Scaffold(
         key: _scaffoladKey,
+        /*
         appBar:AppBar(
           title:Text('Board App'),
           backgroundColor: Colors.deepOrange,
           leading: Container(),
         ),
+        */
 
         body:Column(
           mainAxisAlignment: MainAxisAlignment.center,
