@@ -1,4 +1,6 @@
 import 'package:cspc_recog/calendar/main.dart';
+import 'package:cspc_recog/attendance/mainPage.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
@@ -36,7 +38,7 @@ class MyMainPage extends StatefulWidget {
 class _MyMainPageState extends State<MyMainPage> {
   int _currentIndex = 0;
 
-  final List<Widget> _children = [CalendarPage()];
+  final List<Widget> _children = [AttendancePage(), CalendarPage()];
   void _onTap(int index) {
     setState(() {
       _currentIndex = index;
