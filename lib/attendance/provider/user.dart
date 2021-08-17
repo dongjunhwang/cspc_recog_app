@@ -29,10 +29,10 @@ class UserModel {
   });
   factory UserModel.fromJson(Map<String, dynamic> json) {
     return UserModel(
-      userId: json['user']['userId'],
-      username: json['user']['username'],
-      isOnline: json['isOnline'],
-      lastVisitTime: DateTime.parse(json['lastVisitTime']),
+      userId: json['user_id'],
+      username: json['nick_name'],
+      isOnline: json['is_online'],
+      lastVisitTime: DateTime.parse(json['last_visit_time']),
     );
   }
 }
@@ -47,7 +47,8 @@ Future<List<UserModel>> getUserList(context) async {
       },
     );
     if (response.statusCode == 200) {
-      final data = json.decode(response.body);
+      final data = json.decode(utf8.decode(response.bodyBytes));
+
       for (Map<String, dynamic> temp in data) {
         userList.add(UserModel.fromJson(temp));
       }
