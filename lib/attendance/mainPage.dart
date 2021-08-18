@@ -9,31 +9,26 @@ class AttendancePage extends StatefulWidget {
 }
 
 class _AttendancePageState extends State<AttendancePage> {
-  List<UserModel> userlist = [];
   @override
   void initState() {
     super.initState();
-    reloadUser();
-  }
-
-  void reloadUser() async {
-    userlist = await getUserList(context);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        alignment: Alignment.center,
-        padding: EdgeInsets.all(10),
-        child: GridView.count(
-          crossAxisCount: 4,
-          children: [for (UserModel user in userlist) userView(user)],
-        ),
-      ),
+      body: FutureBuilder<List<UserModel>>(
+          future: getUserList(context),
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              return userView(snapshot.data);
+            } else {
+              // Otherwise, display a loading indicator.
+              return const Center(child: CircularProgressIndicator());
+            }
+          }),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          reloadUser();
           setState(() {});
         },
         child: Text('reload'),
@@ -41,25 +36,50 @@ class _AttendancePageState extends State<AttendancePage> {
     );
   }
 
-  Widget userView(UserModel user) {
+  //TODO 현재 온라인인 유저를 표시
+  Widget userCount(final List<UserModel> userlist) {
+    int cnt = 0;
+    userlist.forEach((element) {
+      if (element.isOnline) cnt++;
+    });
     return Container(
       child: Card(
-        child: Container(
-          padding: EdgeInsets.all(10),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                user.username,
-                style: TextStyle(
-                  fontSize: 30,
+        child: Text(
+          "현재 : $cnt",
+        ),
+      ),
+    );
+  }
+
+  Widget userView(final List<UserModel> userlist) {
+    return Container(
+      alignment: Alignment.topLeft,
+      padding: EdgeInsets.all(10),
+      child: GridView.count(
+        crossAxisCount: 4,
+        children: [
+          for (UserModel user in userlist)
+            Container(
+              child: Card(
+                child: Container(
+                  padding: EdgeInsets.all(10),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        user.username,
+                        style: TextStyle(
+                          fontSize: 30,
+                        ),
+                      ),
+                      user.isOnline ? Text("있음") : Text("없음"),
+                      //Text(user.lastVisitTime.toString())
+                    ],
+                  ),
                 ),
               ),
-              user.isOnline ? Text("있음") : Text("없음"),
-              //Text(user.lastVisitTime.toString())
-            ],
-          ),
-        ),
+            )
+        ],
       ),
     );
   }
