@@ -56,6 +56,7 @@ class _ListScreenState extends State<ListScreen>{
             backgroundColor: Colors.deepOrange,
             body : Column(
               children:[
+                Container(height:height*0.02),
                 Center(
                     child:Container(
                         decoration: BoxDecoration(
@@ -74,25 +75,26 @@ class _ListScreenState extends State<ListScreen>{
                         )
                     )
                 ),
+                Container(height:height*0.1),
                 Center(
                   child:Container(
                     decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(20),
+                        borderRadius: BorderRadius.circular(40),
                         border : Border.all(color:Colors.deepOrange)
                     ),
-                    width: width*0.85,
-                    height: height*0.1,
+                    width: width*0.5,
+                    height: height*0.05,
                     child:ButtonTheme(
-                      minWidth:width*0.5,
+                      minWidth:width*0.4,
                       height:height*0.05,
-                      shape:RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                      shape:RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
                       child:ElevatedButton(
                         child:Text(
                           '글 작성하기',
-                          style:TextStyle(color:Colors.white),
+                          style:TextStyle(color:Colors.deepOrange),
                         ),
                         style:ButtonStyle(
-                          backgroundColor: MaterialStateProperty.all<Color>(Colors.deepOrange),
+                          backgroundColor: MaterialStateProperty.all<Color>(Colors.white),
                         ),
                         onPressed: () {
                           return Navigator.push(
