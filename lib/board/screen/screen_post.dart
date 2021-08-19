@@ -1,13 +1,15 @@
 import 'package:cspc_recog/board/model/model_board.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
+import 'package:like_button/like_button.dart';
+import 'package:cspc_recog/urls.dart';
+import 'package:http/http.dart' as http;
 class PostScreen extends StatefulWidget {
 
   PostList post;
   List<Comment> comments = [];
-
-  PostScreen({this.post,this.comments});
+  int id;
+  PostScreen({this.post,this.comments,this.id});
 
   @override
   _PostScreenState createState() => _PostScreenState();
@@ -22,10 +24,17 @@ class _PostScreenState extends State<PostScreen> {
     double width = screenSize.width;
     double height = screenSize.height;
     return SafeArea(
+      top:true,
+      left:true,
+      right:true,
+      bottom: false,
       child: Scaffold(
+        resizeToAvoidBottomInset: false,
         backgroundColor: Colors.deepOrange,
-        body: Center(
-          child: Column(
+        body: SingleChildScrollView(
+          child: Center(
+            child: Column(
+            mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
               Container(
@@ -45,12 +54,14 @@ class _PostScreenState extends State<PostScreen> {
               _CommentListView(widget.comments, width, height)
             ],
           ),
+        )
         ),
       ),
     );
   }
 
   Widget _PostView(PostList post, double width, double height) {
+    double buttonSize = 30.0;
     return Container(
         decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(20),
@@ -91,33 +102,71 @@ class _PostScreenState extends State<PostScreen> {
                 child: Text(
                   post.contents,
                   textAlign: TextAlign.left,
-                  maxLines:10,
                   style: TextStyle(
                     fontSize:width*0.040,
                   ),
                 ),
               ),
               Container(
-                width : width*0.8,
-                padding: EdgeInsets.only(top: width * 0.012),
-                child: Text(
-                  '좋아요:'+post.like.toString(),
-                  textAlign: TextAlign.center,
-                  maxLines:2,
-                  style: TextStyle(
-                    fontSize:width*0.035,
-                  )
-                  ,
-                )
-                ,
+                width: width * 0.8,
+                //padding: EdgeInsets.only(left:width * 0.024),
+                child: LikeButton(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  size: buttonSize,
+                  circleColor: CircleColor(
+                      start: Color(0xfff551a2), end: Color(0xfffc1e86)),
+                  bubblesColor: BubblesColor(
+                    dotPrimaryColor: Color(0xfff551a2),
+                    dotSecondaryColor: Color(0xfffc1e86),
+                  ),
+                  likeBuilder: (bool isLiked) {
+                    return Icon(
+                      Icons.favorite,
+                      color: isLiked ? Colors.pinkAccent : Colors.grey,
+                      size: buttonSize*0.8,
+                    );
+                  },
+                  likeCount: post.like,
+                  countBuilder: (int count, bool isLiked, String text) {
+                    var color = isLiked ? Colors.pinkAccent : Colors.grey;
+                    Widget result;
+                    if (count == 0) {
+                      result = Text(
+                        "0",
+                        style: TextStyle(color: color),
+                      );
+                    } else
+                      result = Text(
+                        text,
+                        style: TextStyle(color: color),
+                      );
+                    return result;
+                  },
+                  onTap: onLikeButtonTapped,
+                ),
               )
-              ,
             ]
         )
     );
-
   }
+  Future<bool> onLikeButtonTapped(bool isLiked) async{
+    /// send your request here
+    // final bool success= await sendRequest();
+    // 게시글 번호 pk인 게시글의 좋아요 1 증가
+    final response = await http.post(
+        Uri.parse(UrlPrefix.urls+'api/like/'+widget.id.toString()),
+    );
+    if(response.statusCode == 200) {
+      final bool success = true;
+    }
+    else{
+      final bool success = false;
+    }
+    /// if failed, you can do nothing
+    // return success? !isLiked:isLiked;
 
+    return !isLiked;
+  }
   Widget _CommentListView(List<Comment> comments, double width, double height){
     return Container(
         child:Column(
@@ -130,6 +179,7 @@ class _PostScreenState extends State<PostScreen> {
         )
     );
   }
+
   List<Widget> _commentCandidates(double width, List<Comment> comments){
     List<Widget> _children = [];
     for(int i=0;i<comments.length;i++){
@@ -157,11 +207,10 @@ class _PostScreenState extends State<PostScreen> {
                     ),
                     Container(
                       width : width*0.8,
-                      padding: EdgeInsets.fromLTRB(0, 0, 0, width*0.02),
+                      padding: EdgeInsets.fromLTRB(width * 0.05, 0, 0, width*0.02),
                       child: Text(
                         comments[i].contents,
-                        textAlign: TextAlign.center,
-                        maxLines:2,
+                        textAlign: TextAlign.left,
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize:width*0.035,
