@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:cspc_recog/board/model/api_adapter.dart';
 import 'package:cspc_recog/board/model/model_board.dart';
 import 'package:cspc_recog/board/screen/screen_post.dart';
+import 'package:cspc_recog/board/screen/screen_new_post.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
@@ -13,8 +14,8 @@ import 'package:cspc_recog/urls.dart';
 
 class ListScreen extends StatefulWidget{
   List<PostList> posts;
-
-  ListScreen({this.posts});
+  int board_id;
+  ListScreen({this.posts,this.board_id});
 
   @override
   _ListScreenState createState() => _ListScreenState();
@@ -31,7 +32,7 @@ class _ListScreenState extends State<ListScreen>{
     });
     print(pk.toString());
     //final response = await http.get(Uri.parse('https://lsmin1021.pythonanywhere.com/api/post/'+pk.toString()));
-    final response = await http.get(Uri.parse(UrlPrefix.urls+'api/post/'+pk.toString()));
+    final response = await http.get(Uri.parse(UrlPrefix.urls+'api/comment/'+pk.toString()));
     if(response.statusCode == 200) {
       setState(() {
         comments = parseComments(utf8.decode(response.bodyBytes));
@@ -53,23 +54,58 @@ class _ListScreenState extends State<ListScreen>{
     return SafeArea(
         child: Scaffold(
             backgroundColor: Colors.deepOrange,
-            body : Center(
-                child:Container(
+            body : Column(
+              children:[
+                Center(
+                    child:Container(
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(20),
+                            border : Border.all(color:Colors.deepOrange)
+                        ),
+                        width: width*0.85,
+                        height: height*0.6,
+                        child:Swiper(
+                            controller: _controller,
+                            loop:true,
+                            itemCount:widget.posts.length,
+                            itemBuilder:(BuildContext context, int index){
+                              return _buildListView(widget.posts[index],width,height);
+                            }
+                        )
+                    )
+                ),
+                Center(
+                  child:Container(
                     decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(20),
                         border : Border.all(color:Colors.deepOrange)
                     ),
                     width: width*0.85,
-                    height: height*0.6,
-                    child:Swiper(
-                        controller: _controller,
-                        loop:true,
-                        itemCount:widget.posts.length,
-                        itemBuilder:(BuildContext context, int index){
-                          return _buildListView(widget.posts[index],width,height);
-                        }
-                    )
+                    height: height*0.1,
+                    child:ButtonTheme(
+                      minWidth:width*0.5,
+                      height:height*0.05,
+                      shape:RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                      child:ElevatedButton(
+                        child:Text(
+                          '글 작성하기',
+                          style:TextStyle(color:Colors.white),
+                        ),
+                        style:ButtonStyle(
+                          backgroundColor: MaterialStateProperty.all<Color>(Colors.deepOrange),
+                        ),
+                        onPressed: () {
+                          return Navigator.push(
+                              context, MaterialPageRoute(builder: (context) =>
+                              NewPostScreen(board_id:widget.board_id)));
+                        },
+                      ),
+
+                    ),
+
+                  )
                 )
+              ]
             )
         )
     );
@@ -164,7 +200,7 @@ class _ListScreenState extends State<ListScreen>{
                     _fetchComments(post.id).whenComplete(() {
                       return Navigator.push(
                           context, MaterialPageRoute(builder: (context) =>
-                          PostScreen(post: post,comments:comments)));
+                          PostScreen(post: post,comments:comments,id:post.id)));
                     });
                   },
                 ),
