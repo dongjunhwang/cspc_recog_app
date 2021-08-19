@@ -52,13 +52,10 @@ class _NewPostScreenState extends State<NewPostScreen>{
       }
     }
 
-    return SafeArea(
-        top:true,
-        left:true,
-        right:true,
-        bottom: false,
-        child: Scaffold(
-            body: Column(
+    return Scaffold(
+        body:
+        SafeArea(
+        child: Column(
               children: [
                 Form(
                   key: this.formKey,

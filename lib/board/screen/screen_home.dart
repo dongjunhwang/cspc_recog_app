@@ -13,8 +13,6 @@ class BoardPage extends StatefulWidget{
   _HomeScreenState createState() => _HomeScreenState();
 }
 class _HomeScreenState extends State<BoardPage>{
-  final GlobalKey<ScaffoldState> _scaffoladKey = GlobalKey<ScaffoldState>();
-
   List<PostList> posts = [];
   bool isLoading = false;
 
@@ -23,6 +21,8 @@ class _HomeScreenState extends State<BoardPage>{
       isLoading = true;
     });
     //final response = await http.get(Uri.parse('https://lsmin1021.pythonanywhere.com/api/post/'));
+
+    //await Future.delayed(Duration(seconds: 2)); ///로딩 테스트
     final response = await http.get(Uri.parse(UrlPrefix.urls+'api/board/'+board_id.toString()));
     if(response.statusCode == 200) {
       setState(() {
@@ -47,15 +47,6 @@ class _HomeScreenState extends State<BoardPage>{
     double height = screenSize.height;
     return SafeArea(
       child: Scaffold(
-        key: _scaffoladKey,
-        /*
-        appBar:AppBar(
-          title:Text('Board App'),
-          backgroundColor: Colors.deepOrange,
-          leading: Container(),
-        ),
-        */
-
         body:Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -90,20 +81,24 @@ class _HomeScreenState extends State<BoardPage>{
                       backgroundColor: MaterialStateProperty.all<Color>(Colors.deepOrange),
                     ),
                     onPressed: () {
+
                       ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                              content:Row(
-                                children: [
-                                  CircularProgressIndicator(),
-                                  Padding(
-                                    padding: EdgeInsets.only(left:width * 0.036),
-                                  ),
-                                  Text("Loading..."),
-                                ],
-                              )
-                          )
+                        SnackBar(
+                          content:Row(
+                            children: [
+                              CircularProgressIndicator(),
+                              Padding(
+                                padding: EdgeInsets.only(left:width * 0.036),
+                              ),
+                              Text("Loading..."),
+                            ],
+                          ),
+                          duration: Duration(seconds:10),
+
+                        )
                       );
                       _fetchPosts(1).whenComplete((){
+                        ScaffoldMessenger.of(context).removeCurrentSnackBar();
                         return Navigator.push(context,MaterialPageRoute(builder: (context)=>ListScreen(posts:posts,board_id:1)));
                       });
 
@@ -129,22 +124,23 @@ class _HomeScreenState extends State<BoardPage>{
                     ),
                     onPressed: () {
                       ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                              content:Row(
-                                children: [
-                                  CircularProgressIndicator(),
-                                  Padding(
-                                    padding: EdgeInsets.only(left:width * 0.036),
-                                  ),
-                                  Text("Loading..."),
-                                ],
-                              )
-                          )
+                        SnackBar(
+                          content:Row(
+                            children: [
+                              CircularProgressIndicator(),
+                              Padding(
+                                padding: EdgeInsets.only(left:width * 0.036),
+                              ),
+                              Text("Loading..."),
+                            ],
+                          ),
+                          duration: Duration(seconds:10),
+                        )
                       );
                       _fetchPosts(2).whenComplete((){
+                        ScaffoldMessenger.of(context).removeCurrentSnackBar();
                         return Navigator.push(context,MaterialPageRoute(builder: (context)=>ListScreen(posts:posts,board_id:2)));
                       });
-
                     },
                   ),
                 ),
