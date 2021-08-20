@@ -33,11 +33,12 @@ class _AttendancePageState extends State<AttendancePage> {
           future: getUserList(context),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.done) {
-              final List<UserModel> userlist = snapshot.data;
+              List<UserModel> userlist = snapshot.data;
               return Container(
                 child: Column(
                   children: [
                     userCount(userlist),
+                    visitTimeRanking(userlist),
                     Expanded(
                       child: userView(userlist),
                     ),
@@ -76,6 +77,37 @@ class _AttendancePageState extends State<AttendancePage> {
     );
   }
 
+  String formatDuration(Duration d) =>
+      d.toString().split('.').first.padLeft(8, "0");
+
+  Widget visitTimeRanking(List<UserModel> userlist) {
+    userlist.sort(
+      (a, b) => b.visitTimeSum.compareTo(a.visitTimeSum),
+    );
+    return Container(
+        padding: EdgeInsets.all(10),
+        child: Card(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: SizedBox(
+            width: MediaQuery.of(context).size.width,
+            child: Column(
+              children: [
+                for (int i = 0; i < 3; i++)
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text("${i + 1}등 ${userlist[i].username} "),
+                      Text("${formatDuration(userlist[i].visitTimeSum)}"),
+                    ],
+                  )
+              ],
+            ),
+          ),
+        ));
+  }
+
   Widget userView(final List<UserModel> userlist) {
     return Container(
       alignment: Alignment.topLeft,
@@ -111,6 +143,7 @@ class _AttendancePageState extends State<AttendancePage> {
                               "있음",
                             )
                           : Text("없음"),
+                      //Text("${}")
                       //Text(user.lastVisitTime.toString())
                     ],
                   ),
