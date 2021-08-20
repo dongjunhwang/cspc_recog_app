@@ -1,6 +1,7 @@
 import 'package:cspc_recog/attendance/provider/user.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'dart:math';
 
 //TODO : remove user list button (바로 User list를 볼 수 있도록 하기)
 class AttendancePage extends StatefulWidget {
@@ -13,6 +14,17 @@ class _AttendancePageState extends State<AttendancePage> {
   void initState() {
     super.initState();
   }
+
+  final List<Color> profileColorList = [
+    Colors.amber,
+    Colors.blue,
+    Colors.teal,
+    Colors.lime,
+    Colors.brown,
+    Colors.deepPurple,
+    Colors.cyan,
+    Colors.orange,
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -85,6 +97,8 @@ class _AttendancePageState extends State<AttendancePage> {
                       Icon(
                         Icons.account_circle,
                         size: 50,
+                        color: profileColorList[
+                            Random().nextInt(profileColorList.length)],
                       ),
                       Text(
                         user.username,
