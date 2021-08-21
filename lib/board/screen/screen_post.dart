@@ -154,7 +154,10 @@ class _PostScreenState extends State<PostScreen> {
     // final bool success= await sendRequest();
     // 게시글 번호 pk인 게시글의 좋아요 1 증가
     final response = await http.post(
-        Uri.parse(UrlPrefix.urls+'api/like/'+widget.id.toString()),
+        Uri.parse(UrlPrefix.urls+'board/like/'+widget.id.toString()),
+        body: <String,String>{
+          'profile': '1', //profile id
+        }
     );
     if(response.statusCode == 200) {
       final bool success = true;

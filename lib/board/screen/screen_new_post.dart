@@ -31,7 +31,7 @@ class _NewPostScreenState extends State<NewPostScreen>{
       //});
       print(pk.toString());
       final response = await http.post(
-          Uri.parse(UrlPrefix.urls+'api/board/'+pk.toString()),
+          Uri.parse(UrlPrefix.urls+'board/'+pk.toString()),
           body: <String,String>{
             'title': title,
             'author': name,
