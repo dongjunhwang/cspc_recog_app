@@ -37,8 +37,8 @@ class _AttendancePageState extends State<AttendancePage> {
               return Container(
                 child: Column(
                   children: [
-                    userCount(userlist),
                     visitTimeRanking(userlist),
+                    userCount(userlist),
                     Expanded(
                       child: userView(userlist),
                     ),
@@ -108,7 +108,9 @@ class _AttendancePageState extends State<AttendancePage> {
         ));
   }
 
-  Widget userView(final List<UserModel> userlist) {
+  Widget userView(List<UserModel> userlist) {
+    // online user sort
+    userlist.sort((a, b) => b.isOnline ? 1 : -1);
     return Container(
       alignment: Alignment.topLeft,
       padding: EdgeInsets.all(10),
@@ -126,11 +128,40 @@ class _AttendancePageState extends State<AttendancePage> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(
-                        Icons.account_circle,
-                        size: 50,
-                        color: profileColorList[
-                            Random().nextInt(profileColorList.length)],
+                      Stack(
+                        children: [
+                          Icon(
+                            Icons.account_circle,
+                            size: 50,
+                            color: profileColorList[
+                                Random().nextInt(profileColorList.length)],
+                          ),
+                          Positioned(
+                            right: 3,
+                            bottom: 3,
+                            child: Container(
+                              width: 20,
+                              height: 20,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                          Positioned(
+                            right: 5,
+                            bottom: 5,
+                            child: Container(
+                              width: 15,
+                              height: 15,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color:
+                                    user.isOnline ? Colors.green : Colors.grey,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                       Text(
                         user.username,
@@ -138,11 +169,7 @@ class _AttendancePageState extends State<AttendancePage> {
                           fontSize: 20,
                         ),
                       ),
-                      user.isOnline
-                          ? Text(
-                              "있음",
-                            )
-                          : Text("없음"),
+
                       //Text("${}")
                       //Text(user.lastVisitTime.toString())
                     ],
