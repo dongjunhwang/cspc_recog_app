@@ -3,36 +3,24 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:cspc_recog/urls.dart';
 
-class GetUserListProvider extends ChangeNotifier {
-  List<UserModel> userList = [];
-  bool loading = false;
-
-  getUserData(context) async {
-    loading = true;
-    userList = await getUserList(context);
-    loading = false;
-    notifyListeners();
-  }
-}
-
-class UserModel {
-  final int userId;
-  final String username;
+class ProfileModel {
+  final int profileId;
+  final String nickName;
   final bool isOnline;
   final DateTime lastVisitTime;
   final Duration visitTimeSum;
 
-  UserModel({
-    this.userId,
-    this.username,
+  ProfileModel({
+    this.profileId,
+    this.nickName,
     this.isOnline,
     this.lastVisitTime,
     this.visitTimeSum,
   });
-  factory UserModel.fromJson(Map<String, dynamic> json) {
-    return UserModel(
-      userId: json['user_id'],
-      username: json['nick_name'],
+  factory ProfileModel.fromJson(Map<String, dynamic> json) {
+    return ProfileModel(
+      profileId: json['Profile_id'],
+      nickName: json['nick_name'],
       isOnline: json['is_online'],
       lastVisitTime: DateTime.parse(json['last_visit_time']),
       visitTimeSum: parseDuration(json['visit_time_sum']),
@@ -40,8 +28,8 @@ class UserModel {
   }
 }
 
-Future<List<UserModel>> getUserList(context) async {
-  List<UserModel> userList = [];
+Future<List<ProfileModel>> getProfileList(context) async {
+  List<ProfileModel> profileList = [];
   try {
     final response = await http.get(
       Uri.parse(UrlPrefix.urls + "users/"),
@@ -53,13 +41,13 @@ Future<List<UserModel>> getUserList(context) async {
       final data = json.decode(utf8.decode(response.bodyBytes));
 
       for (Map<String, dynamic> temp in data) {
-        userList.add(UserModel.fromJson(temp));
+        profileList.add(ProfileModel.fromJson(temp));
       }
     }
   } catch (e) {
     print(e);
   }
-  return userList;
+  return profileList;
 }
 
 Duration parseDuration(String s) {
