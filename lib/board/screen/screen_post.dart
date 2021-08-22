@@ -1,6 +1,7 @@
 import 'package:cspc_recog/board/model/model_board.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_swiper/flutter_swiper.dart';
 import 'package:like_button/like_button.dart';
 import 'package:cspc_recog/urls.dart';
 import 'package:http/http.dart' as http;
@@ -8,8 +9,9 @@ class PostScreen extends StatefulWidget {
 
   PostList post;
   List<Comment> comments = [];
+  List<ImageUrl> images = [];
   int id;
-  PostScreen({this.post,this.comments,this.id});
+  PostScreen({this.post,this.comments,this.id, this.images});
 
   @override
   _PostScreenState createState() => _PostScreenState();
@@ -50,8 +52,8 @@ class _PostScreenState extends State<PostScreen> {
                   ),
                 ),
               ),
-              _PostView(widget.post, width, height),
-              _CommentListView(widget.comments, width, height)
+              postView(widget.post, width, height),
+              commentListView(widget.comments, width, height)
             ],
           ),
         )
@@ -60,8 +62,9 @@ class _PostScreenState extends State<PostScreen> {
     );
   }
 
-  Widget _PostView(PostList post, double width, double height) {
+  Widget postView(PostList post, double width, double height) {
     double buttonSize = 30.0;
+    SwiperController _controller = SwiperController();
     return Container(
         decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(20),
@@ -71,7 +74,7 @@ class _PostScreenState extends State<PostScreen> {
         child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
-              Container(
+              Container( ///제목
                 width : width*0.8,
                 padding: EdgeInsets.only(top: width * 0.012),
                 child: Text(
@@ -84,7 +87,7 @@ class _PostScreenState extends State<PostScreen> {
                   ),
                 ),
               ),
-              Container(
+              Container( ///작성자
                 width : width*0.8,
                 padding: EdgeInsets.only(top: width * 0.012),
                 child: Text(
@@ -96,7 +99,7 @@ class _PostScreenState extends State<PostScreen> {
                   ),
                 ),
               ),
-              Container(
+              Container( ///내용
                 width : width*0.8,
                 padding: EdgeInsets.all(width * 0.024),
                 child: Text(
@@ -107,7 +110,25 @@ class _PostScreenState extends State<PostScreen> {
                   ),
                 ),
               ),
-              Container(
+              (post.hasImage)
+              ?Container(
+                width: width*0.5,
+                height: height*0.5,
+                child: Swiper(
+                    controller: _controller,
+                    loop:true,
+                    itemCount:widget.images.length,
+                    itemBuilder:(BuildContext context, int index){
+                      return imagesView(widget.images[index],width,height);
+                    }
+                ),
+              )
+              : Container(
+                width: width*0.8,
+                height:height*0.1
+              )
+              ,
+              Container( ///좋아요
                 width: width * 0.8,
                 //padding: EdgeInsets.only(left:width * 0.024),
                 child: LikeButton(
@@ -170,20 +191,28 @@ class _PostScreenState extends State<PostScreen> {
 
     return !isLiked;
   }
-  Widget _CommentListView(List<Comment> comments, double width, double height){
+
+  Widget imagesView(ImageUrl image, double width, double height) {
+    return Container(
+      width: width * 0.3,
+      child: Image.network(UrlPrefix.urls + image.imgUrl.substring(1)),
+    );
+  }
+
+  Widget commentListView(List<Comment> comments, double width, double height){
     return Container(
         child:Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
               Column(
-                  children:_commentCandidates(width, comments)
+                  children:commentCandidates(width, comments)
               )
             ]
         )
     );
   }
 
-  List<Widget> _commentCandidates(double width, List<Comment> comments){
+  List<Widget> commentCandidates(double width, List<Comment> comments){
     List<Widget> _children = [];
     for(int i=0;i<comments.length;i++){
       print('comment+'+i.toString());
@@ -227,4 +256,11 @@ class _PostScreenState extends State<PostScreen> {
     }
     return _children;
   }
+
+  void loadImages(){
+    //final response = await http.get(Uri.parse(UrlPrefix.urls+'board/comment/'+pk.toString()));
+    
+
+  }
+
 }
