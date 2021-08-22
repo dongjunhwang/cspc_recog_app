@@ -3,6 +3,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'dart:math';
 
+import '../urls.dart';
+
 //TODO : remove profile list button (바로 profile list를 볼 수 있도록 하기)
 class AttendancePage extends StatefulWidget {
   @override
@@ -145,12 +147,27 @@ class _AttendancePageState extends State<AttendancePage> {
                     children: [
                       Stack(
                         children: [
-                          Icon(
-                            Icons.account_circle,
-                            size: 50,
-                            color: profileColorList[
-                                Random().nextInt(profileColorList.length)],
-                          ),
+                          profile.profileImageUrl == null
+                              ? Icon(
+                                  Icons.account_circle,
+                                  size: 50,
+                                  color: profileColorList[Random()
+                                      .nextInt(profileColorList.length)],
+                                )
+                              : Container(
+                                  width: 50,
+                                  height: 50,
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    image: DecorationImage(
+                                      fit: BoxFit.fill,
+                                      image: NetworkImage(UrlPrefix.urls
+                                              .substring(0,
+                                                  UrlPrefix.urls.length - 1) +
+                                          profile.profileImageUrl),
+                                    ),
+                                  ),
+                                ),
                           Positioned(
                             right: 3,
                             bottom: 3,

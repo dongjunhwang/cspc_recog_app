@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:cspc_recog/urls.dart';
@@ -9,6 +8,7 @@ class ProfileModel {
   final bool isOnline;
   final DateTime lastVisitTime;
   final Duration visitTimeSum;
+  String profileImageUrl;
 
   ProfileModel({
     this.profileId,
@@ -16,6 +16,7 @@ class ProfileModel {
     this.isOnline,
     this.lastVisitTime,
     this.visitTimeSum,
+    this.profileImageUrl,
   });
   factory ProfileModel.fromJson(Map<String, dynamic> json) {
     return ProfileModel(
@@ -24,6 +25,7 @@ class ProfileModel {
       isOnline: json['is_online'],
       lastVisitTime: DateTime.parse(json['last_visit_time']),
       visitTimeSum: parseDuration(json['visit_time_sum']),
+      profileImageUrl: json['profile_image'],
     );
   }
 }
