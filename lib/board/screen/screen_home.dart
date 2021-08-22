@@ -4,27 +4,24 @@ import 'package:cspc_recog/board/screen/screen_post_list.dart';
 import 'package:cspc_recog/board/model/model_board.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:cspc_recog/board/model/api_adapter.dart';
-
 import 'package:cspc_recog/urls.dart';
-
 
 class BoardPage extends StatefulWidget{
   @override
   _HomeScreenState createState() => _HomeScreenState();
 }
 class _HomeScreenState extends State<BoardPage>{
-  final GlobalKey<ScaffoldState> _scaffoladKey = GlobalKey<ScaffoldState>();
-
   List<PostList> posts = [];
   bool isLoading = false;
 
-  _fetchPosts() async{
+  _fetchPosts(int board_id) async{
     setState((){
       isLoading = true;
     });
     //final response = await http.get(Uri.parse('https://lsmin1021.pythonanywhere.com/api/post/'));
-    final response = await http.get(Uri.parse(UrlPrefix.urls+'api/post/'));
+
+    //await Future.delayed(Duration(seconds: 3)); ///로딩 테스트
+    final response = await http.get(Uri.parse(UrlPrefix.urls+'board/'+board_id.toString()));
     if(response.statusCode == 200) {
       setState(() {
         posts = parsePosts(utf8.decode(response.bodyBytes));
@@ -48,15 +45,6 @@ class _HomeScreenState extends State<BoardPage>{
     double height = screenSize.height;
     return SafeArea(
       child: Scaffold(
-        key: _scaffoladKey,
-        /*
-        appBar:AppBar(
-          title:Text('Board App'),
-          backgroundColor: Colors.deepOrange,
-          leading: Container(),
-        ),
-        */
-
         body:Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -71,8 +59,9 @@ class _HomeScreenState extends State<BoardPage>{
                 )
             ),
             Padding(padding:EdgeInsets.all(width*0.024)),
-            _buildStep(width, '아직 게시판 분리 못함'),
+            _buildStep(width, '게시판 분리'),
             _buildStep(width, '게시글 및 댓글 불러오기 가능!'),
+            _buildStep(width, '게시글 등록, 좋아요 가능'),
             Padding(padding:EdgeInsets.all(width*0.024)),
             Container(
               padding:EdgeInsets.only(bottom: width*0.036),
@@ -90,23 +79,65 @@ class _HomeScreenState extends State<BoardPage>{
                       backgroundColor: MaterialStateProperty.all<Color>(Colors.deepOrange),
                     ),
                     onPressed: () {
+
                       ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                              content:Row(
-                                children: [
-                                  CircularProgressIndicator(),
-                                  Padding(
-                                    padding: EdgeInsets.only(left:width * 0.036),
-                                  ),
-                                  Text("Loading..."),
-                                ],
-                              )
-                          )
+                        SnackBar(
+                          content:Row(
+                            children: [
+                              CircularProgressIndicator(),
+                              Padding(
+                                padding: EdgeInsets.only(left:width * 0.036),
+                              ),
+                              Text("Loading..."),
+                            ],
+                          ),
+                          duration: Duration(seconds:10),
+                        )
                       );
-                      _fetchPosts().whenComplete((){
-                        return Navigator.push(context,MaterialPageRoute(builder: (context)=>ListScreen(posts:posts,)));
+                      _fetchPosts(1).whenComplete((){
+                        ScaffoldMessenger.of(context).removeCurrentSnackBar();
+                        return Navigator.push(context,MaterialPageRoute(builder: (context)=>ListScreen(posts:posts,board_id:1)));
                       });
 
+                    },
+                  ),
+                ),
+              ),
+            ),
+            Container(
+              padding:EdgeInsets.only(bottom: width*0.036),
+              child:Center(
+                child:ButtonTheme(
+                  minWidth: width*0.8,
+                  height: height*0.05,
+                  shape:RoundedRectangleBorder(borderRadius: BorderRadius.circular(10),),
+                  child:ElevatedButton(
+                    child:Text(
+                      '2번',
+                      style:TextStyle(color:Colors.white),
+                    ),
+                    style:ButtonStyle(
+                      backgroundColor: MaterialStateProperty.all<Color>(Colors.deepOrange),
+                    ),
+                    onPressed: () {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content:Row(
+                            children: [
+                              CircularProgressIndicator(),
+                              Padding(
+                                padding: EdgeInsets.only(left:width * 0.036),
+                              ),
+                              Text("Loading..."),
+                            ],
+                          ),
+                          duration: Duration(seconds:10),
+                        )
+                      );
+                      _fetchPosts(2).whenComplete((){
+                        ScaffoldMessenger.of(context).removeCurrentSnackBar();
+                        return Navigator.push(context,MaterialPageRoute(builder: (context)=>ListScreen(posts:posts,board_id:2)));
+                      });
                     },
                   ),
                 ),
