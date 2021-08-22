@@ -32,7 +32,7 @@ class _ListScreenState extends State<ListScreen>{
     });
     print(pk.toString());
     //final response = await http.get(Uri.parse('https://lsmin1021.pythonanywhere.com/api/post/'+pk.toString()));
-    final response = await http.get(Uri.parse(UrlPrefix.urls+'api/comment/'+pk.toString()));
+    final response = await http.get(Uri.parse(UrlPrefix.urls+'board/comment/'+pk.toString()));
     if(response.statusCode == 200) {
       setState(() {
         comments = parseComments(utf8.decode(response.bodyBytes));

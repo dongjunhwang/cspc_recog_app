@@ -4,9 +4,7 @@ import 'package:cspc_recog/board/screen/screen_post_list.dart';
 import 'package:cspc_recog/board/model/model_board.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-
 import 'package:cspc_recog/urls.dart';
-
 
 class BoardPage extends StatefulWidget{
   @override
@@ -22,8 +20,8 @@ class _HomeScreenState extends State<BoardPage>{
     });
     //final response = await http.get(Uri.parse('https://lsmin1021.pythonanywhere.com/api/post/'));
 
-    //await Future.delayed(Duration(seconds: 2)); ///로딩 테스트
-    final response = await http.get(Uri.parse(UrlPrefix.urls+'api/board/'+board_id.toString()));
+    //await Future.delayed(Duration(seconds: 3)); ///로딩 테스트
+    final response = await http.get(Uri.parse(UrlPrefix.urls+'board/'+board_id.toString()));
     if(response.statusCode == 200) {
       setState(() {
         posts = parsePosts(utf8.decode(response.bodyBytes));
@@ -94,7 +92,6 @@ class _HomeScreenState extends State<BoardPage>{
                             ],
                           ),
                           duration: Duration(seconds:10),
-
                         )
                       );
                       _fetchPosts(1).whenComplete((){
