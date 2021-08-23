@@ -1,3 +1,4 @@
+import 'package:cspc_recog/auth/auth.dart';
 import 'package:cspc_recog/calendar/calendar.dart';
 import 'package:cspc_recog/attendance/mainPage.dart';
 import 'package:cspc_recog/board/screen/screen_home.dart';
@@ -23,7 +24,7 @@ class MainApp extends StatelessWidget {
         const Locale('ko', 'KR'),
       ],
       title: 'Main App',
-      home: MyMainPage(title: 'Demo Version CMB'),
+      home: LoginPage(),
     );
   }
 }
@@ -39,7 +40,7 @@ class MyMainPage extends StatefulWidget {
 class _MyMainPageState extends State<MyMainPage> {
   int _currentIndex = 0;
 
-  final List<Widget> _children = [AttendancePage(),BoardPage(),Calendar()];
+  final List<Widget> _children = [AttendancePage(), BoardPage(), Calendar()];
   final List _title = ["Attendance", "Board", "Calendar"];
   void _onTap(int index) {
     setState(() {
