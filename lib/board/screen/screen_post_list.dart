@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+
 import 'package:cspc_recog/board/model/api_adapter.dart';
 import 'package:cspc_recog/board/model/model_board.dart';
 import 'package:cspc_recog/board/screen/screen_post.dart';
@@ -25,23 +26,37 @@ class _ListScreenState extends State<ListScreen>{
   int _currentIndex = 0;
   bool isLoading = false;
   List<Comment> comments = [];
-
+  List<ImageUrl> images = [];
   _fetchComments(int pk) async{
     setState((){
       isLoading = true;
     });
     print(pk.toString());
     //final response = await http.get(Uri.parse('https://lsmin1021.pythonanywhere.com/api/post/'+pk.toString()));
-    final response = await http.get(Uri.parse(UrlPrefix.urls+'board/comment/'+pk.toString()));
-    if(response.statusCode == 200) {
+    final commentResponse = await http.get(Uri.parse(UrlPrefix.urls+'board/comment/'+pk.toString()));
+    if(commentResponse.statusCode == 200) {
       setState(() {
-        comments = parseComments(utf8.decode(response.bodyBytes));
-        isLoading = false;
+        comments = parseComments(utf8.decode(commentResponse.bodyBytes));
       });
     }
     else{
       throw Exception('falied!');
     }
+    print("댓글 완료");
+  }
+  _fetchImages(int pk) async{
+      print("이미지 이쌩");
+      final imgResponse = await http.get(
+          Uri.parse(UrlPrefix.urls + 'board/image/' + pk.toString()));
+      if(imgResponse.statusCode == 200){
+        print("불러옴");
+        setState(() {
+          images = parseImgs(utf8.decode(imgResponse.bodyBytes));
+        });
+      }
+      else{
+        throw Exception('Img falied!');
+      }
   }
 
   SwiperController _controller = SwiperController();
@@ -200,9 +215,11 @@ class _ListScreenState extends State<ListScreen>{
                   ),
                   onPressed: () {
                     _fetchComments(post.id).whenComplete(() {
-                      return Navigator.push(
-                          context, MaterialPageRoute(builder: (context) =>
-                          PostScreen(post: post,comments:comments,id:post.id)));
+                      _fetchImages(post.id).whenComplete((){
+                        return Navigator.push(
+                            context, MaterialPageRoute(builder: (context) =>
+                            PostScreen(post: post,comments:comments,id:post.id,images:images)));
+                      });
                     });
                   },
                 ),
