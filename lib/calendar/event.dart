@@ -30,6 +30,7 @@ class _AddEventPageState extends State<AddEventPage> {
     double height = screenSize.height;
 
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
         //title: Text('Add Event'),
         backgroundColor: Colors.transparent,
@@ -53,23 +54,13 @@ class _AddEventPageState extends State<AddEventPage> {
                   _formKey.currentState.save();
                   final data =
                       Map<String, dynamic>.from(_formKey.currentState.value);
-                  print(data);
-                  print(new DateTime.now());
-                  print(new DateFormat("yyyy.MM.dd a hh:mm")
-                      .format(DateTime.parse('2021-08-19 00:02:14.890621')));
-                  print(DateTime.parse('2021-08-19 00:02:14.890621'));
-                  print(
-                      new DateFormat.yMMMd('en_US').format(new DateTime.now()));
-                  print(data['date'].toUtc());
 
-                  /*data['date'] = DateFormat("yyyy.MM.dd a hh:mm")
-                      .format(data['date'] as DateTime);*/
                   data['date'] = data['date'].toUtc().toIso8601String();
 
                   print(data);
 
                   final response = await http.post(
-                    Uri.parse(UrlPrefix.urls + 'calendars/event/post/1/'),
+                    Uri.parse(UrlPrefix.urls + 'calendars/1/event/post/'),
                     headers: <String, String>{
                       'Content-Type': 'application/json; charset=UTF-8',
                     },
