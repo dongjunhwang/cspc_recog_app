@@ -1,6 +1,7 @@
 import 'package:cspc_recog/board/model/api_adapter.dart';
 import 'package:flutter/material.dart';
 import 'package:cspc_recog/board/screen/screen_post_list.dart';
+import 'package:cspc_recog/board/screen/screen_new_board.dart';
 import 'package:cspc_recog/board/model/model_board.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -138,6 +139,28 @@ class _HomeScreenState extends State<BoardPage>{
                         ScaffoldMessenger.of(context).removeCurrentSnackBar();
                         return Navigator.push(context,MaterialPageRoute(builder: (context)=>ListScreen(posts:posts,board_id:2)));
                       });
+                    },
+                  ),
+                ),
+              ),
+            ),
+            Container(
+              padding:EdgeInsets.only(bottom: width*0.036),
+              child:Center(
+                child:ButtonTheme(
+                  minWidth: width*0.8,
+                  height: height*0.05,
+                  shape:RoundedRectangleBorder(borderRadius: BorderRadius.circular(10),),
+                  child:ElevatedButton(
+                    child:Text(
+                      '게시판 생성',
+                      style:TextStyle(color:Colors.white),
+                    ),
+                    style:ButtonStyle(
+                      backgroundColor: MaterialStateProperty.all<Color>(Colors.deepOrange),
+                    ),
+                    onPressed: () {
+                        return Navigator.push(context,MaterialPageRoute(builder: (context)=>NewBoardScreen(group_id:1)));
                     },
                   ),
                 ),
