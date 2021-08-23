@@ -61,9 +61,11 @@ class Post{
 class Comment{
   String author;
   String contents;
-  Comment({this.author, this.contents});
+  int postId;
+  Comment({this.author, this.contents,this.postId});
 
   Comment.fromJson(Map<String,dynamic> json)
       : author = json['author'],
-        contents = json['contents'];
+        contents = json['contents'],
+        postId = json['post_id'];
 }
