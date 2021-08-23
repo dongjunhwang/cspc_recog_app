@@ -28,6 +28,7 @@ dependencies:
   flutter_localizations: # use in calendar
     sdk: flutter
   table_calendar: ^3.0.2
+  flutter_form_builder:
 
   #For Attendance
   http:
