@@ -8,7 +8,8 @@ class PostList{
   String contents;
   int id;
   int like;
-  PostList({this.id,this.title,this.author,this.contents,this.like});
+  bool hasImage;
+  PostList({this.id,this.title,this.author,this.contents,this.like, this.hasImage});
 
   PostList.fromMap(Map<String,dynamic> map)
       : id = map['id'],
@@ -22,8 +23,17 @@ class PostList{
         title = json['title'],
         author = json['author'],
         contents = json['contents'],
-        like = json['like_count'];
+        like = json['like_count'],
+        hasImage = json['has_image'];
+}
 
+class ImageUrl{
+  String imgUrl;
+
+  ImageUrl({this.imgUrl});
+
+  ImageUrl.fromJson(Map<String,dynamic> json)
+    : imgUrl = json['image'];
 }
 
 class Post{
@@ -31,7 +41,8 @@ class Post{
   String author;
   String contents;
   int like;
-  Post({this.title,this.author,this.contents,this.like});
+  bool has_image;
+  Post({this.title,this.author,this.contents,this.like, this.has_image});
 
   Post.fromMap(Map<String,dynamic> map)
       : title = map['title'],
@@ -43,7 +54,8 @@ class Post{
       : title = json['title'],
         author = json['author'],
         contents = json['contents'],
-        like = json['like_count'];
+        like = json['like_count'],
+        has_image = json['has_image'];
 }
 
 class Comment{

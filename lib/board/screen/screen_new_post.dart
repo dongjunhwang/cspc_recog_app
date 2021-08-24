@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:cspc_recog/urls.dart';
 import 'package:http/http.dart' as http;
-
+import 'package:image_picker/image_picker.dart';
 
 class NewPostScreen extends StatefulWidget{
   int board_id;
@@ -18,6 +18,8 @@ class _NewPostScreenState extends State<NewPostScreen>{
   String name='';
   String content = '';
 
+  final ImagePicker picker = ImagePicker();
+  List<XFile> files = [];
 
   @override
   Widget build(BuildContext context){
@@ -26,28 +28,30 @@ class _NewPostScreenState extends State<NewPostScreen>{
     double height = screenSize.height;
 
     _sendPost(int pk) async{
-      //setState((){
-      //  isLoading = true;
-      //});
       print(pk.toString());
-      final response = await http.post(
-          Uri.parse(UrlPrefix.urls+'board/'+pk.toString()),
-          body: <String,String>{
-            'title': title,
-            'author': name,
-            'contents': content,
-            'board_id': pk.toString()
+      var request = http.MultipartRequest('POST',Uri.parse(UrlPrefix.urls+'board/'+pk.toString()));
+      request.fields['title'] = title;
+      request.fields['author'] = name;
+      request.fields['contents']= content;
+      request.fields['board_id'] = pk.toString();
+      await Future.forEach(
+        files,
+          (file) async =>{
+            request.files.add(
+            http.MultipartFile(
+            'image',
+            (http.ByteStream(file.openRead())).cast(),
+            await file.length(),
+            filename:pk.toString()+'.jpg'
+            ),
+            ),
           }
       );
+      final response = await request.send();
       if(response.statusCode == 200) {
         print("send complete!");
-        //setState(() {
-          //comments = parseComments(utf8.decode(response.bodyBytes));
-          //isLoading = false;
-        //});
       }
       else{
-        print('nono');
         throw Exception('falied!');
       }
     }
@@ -77,7 +81,7 @@ class _NewPostScreenState extends State<NewPostScreen>{
                           return null;
                         },
                         //autovalidateMode: AutovalidateMode.always,
-                      ),
+                      ), ///제목
                       Container(height: height*0.012),
                       TextFormField(
                         decoration: const InputDecoration(
@@ -94,28 +98,45 @@ class _NewPostScreenState extends State<NewPostScreen>{
                           }
                           return null;
                         },
-                      ),
+                      ),///이름
                       Container(height: height*0.012),
                       Container(
-                      child: TextFormField(
+                        child: TextFormField(
 
-                        decoration: const InputDecoration(
-                          border: OutlineInputBorder(),
-                          labelText: '내용',
+                          decoration: const InputDecoration(
+                            border: OutlineInputBorder(),
+                            labelText: '내용',
+                          ),
+                          maxLines: 10,
+                          keyboardType: TextInputType.multiline,
+                          onSaved: (val) {
+                            this.content = val;
+                          },
+                          validator: (val) {
+                            if(val.length<1){
+                              return '내용을 작성해주세요';
+                            }
+                            return null;
+                          },
+                        )
+                      ),///내용
+                      Container(
+                        child: ButtonTheme(
+                          minWidth:width*0.5,
+                          height:height*0.05,
+                          shape:RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                          child:ElevatedButton(
+                            child:Text(
+                              '사진 업로드',
+                              style:TextStyle(color:Colors.white),
+                            ),
+                            style:ButtonStyle(
+                              backgroundColor: MaterialStateProperty.all<Color>(Colors.deepOrange),
+                            ),
+                            onPressed: () => takeImage(context)
+                          ),
                         ),
-                        maxLines: 10,
-                        keyboardType: TextInputType.multiline,
-                        onSaved: (val) {
-                          this.content = val;
-                        },
-                        validator: (val) {
-                          if(val.length<1){
-                            return '내용을 작성해주세요';
-                          }
-                          return null;
-                        },
-                      )
-                      )
+                      ), ///사진
                     ],
                   ),
                 ),
@@ -150,4 +171,54 @@ class _NewPostScreenState extends State<NewPostScreen>{
         )
     );
   }
+  takeImage(mContext){
+    return showDialog(
+        context: mContext,
+        builder: (context) {
+          return SimpleDialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8.0),
+            ),
+            title: Text('이미지 선택',
+                style: TextStyle(
+                  color: Colors.black,
+                  fontWeight: FontWeight.bold,
+                )),
+            children: <Widget>[
+              SimpleDialogOption(
+                child:Text('카메라로 찍기', style:TextStyle(color: Colors.black54)),
+                onPressed: captureImageWithCamera,
+              ),
+              SimpleDialogOption(
+                  child:Text('갤러리에서 선택', style:TextStyle(color: Colors.black54)),
+                onPressed: pickImageFromGallery,
+              ),
+              SimpleDialogOption(
+                  child:Text('취소', style:TextStyle(color: Colors.black54)),
+                onPressed: () => Navigator.pop(context),
+              ),
+            ]
+          );
+        });
+  }
+
+  captureImageWithCamera() async{
+    print("카메라");
+    Navigator.pop(context);
+    XFile imageFile = await picker.pickImage(
+        source: ImageSource.camera, maxWidth: 500, maxHeight: 500);
+    setState(() {
+      this.files.add(imageFile);
+    });
+  }
+
+  pickImageFromGallery() async{
+    print("갤러리");
+    Navigator.pop(context);
+    List<XFile> imageFiles = await picker.pickMultiImage(maxWidth: 500, maxHeight: 500);
+    setState(() {
+      this.files = imageFiles;
+    });
+  }
+
 }
