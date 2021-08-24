@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:http/http.dart' as http;
 import '../urls.dart';
+import 'model_event.dart';
 
 class Event {
   final String title;
@@ -15,8 +16,10 @@ class Event {
 
 class AddEventPage extends StatefulWidget {
   final DateTime selectedDate;
+  final CalendarEvent event;
 
-  const AddEventPage({Key key, this.selectedDate}) : super(key: key);
+  const AddEventPage({Key key, this.selectedDate, this.event})
+      : super(key: key);
   @override
   _AddEventPageState createState() => _AddEventPageState();
 }
@@ -58,22 +61,41 @@ class _AddEventPageState extends State<AddEventPage> {
                   data['date'] = data['date'].toUtc().toIso8601String();
 
                   print(data);
-
-                  final response = await http.post(
-                    Uri.parse(UrlPrefix.urls + 'calendars/1/event/post/'),
-                    headers: <String, String>{
-                      'Content-Type': 'application/json; charset=UTF-8',
-                    },
-                    body: jsonEncode(
-                      [
-                        {
-                          "title": data['title'],
-                          "description": data['description'],
-                          "date": data['date']
-                        }
-                      ],
-                    ),
-                  );
+                  if (widget.event == null) {
+                    final response = await http.post(
+                      Uri.parse(UrlPrefix.urls + 'calendars/1/event/post/'),
+                      headers: <String, String>{
+                        'Content-Type': 'application/json; charset=UTF-8',
+                      },
+                      body: jsonEncode(
+                        [
+                          {
+                            "title": data['title'],
+                            "description": data['description'],
+                            "date": data['date']
+                          }
+                        ],
+                      ),
+                    );
+                  } else {
+                    //edit and update
+                    int id = widget.event.id;
+                    final response = await http.put(
+                      Uri.parse(UrlPrefix.urls + 'calendars/1/event/$id/edit/'),
+                      headers: <String, String>{
+                        'Content-Type': 'application/json; charset=UTF-8',
+                      },
+                      body: jsonEncode(
+                        [
+                          {
+                            "title": data['title'],
+                            "description": data['description'],
+                            "date": data['date']
+                          }
+                        ],
+                      ),
+                    );
+                  }
                 }
                 Navigator.pop(context);
               },
@@ -94,6 +116,7 @@ class _AddEventPageState extends State<AddEventPage> {
                     validator: FormBuilderValidators.compose(
                         [FormBuilderValidators.required(context)]),
                     name: 'title',
+                    initialValue: widget.event?.title,
                     decoration: InputDecoration(
                         hintText: "Add Title",
                         border: InputBorder.none,
@@ -105,7 +128,9 @@ class _AddEventPageState extends State<AddEventPage> {
                     validator: FormBuilderValidators.compose(
                         [FormBuilderValidators.required(context)]),
                     name: 'date',
-                    initialValue: widget.selectedDate ?? DateTime.now(),
+                    initialValue: widget.event != null
+                        ? widget.event.date
+                        : widget.selectedDate ?? DateTime.now(),
                     fieldHintText: "Add Date",
                     inputType: InputType.both,
                     format: DateFormat("yyyy.MM.dd a hh:mm"),
@@ -117,6 +142,7 @@ class _AddEventPageState extends State<AddEventPage> {
                   /* Details Form */
                   FormBuilderTextField(
                     name: 'description',
+                    initialValue: widget.event?.description,
                     maxLines: 5,
                     minLines: 1,
                     decoration: InputDecoration(

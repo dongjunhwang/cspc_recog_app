@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'event.dart';
 import 'model_event.dart';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
@@ -20,9 +21,12 @@ class EventDetails extends StatelessWidget {
         ),
         actions: [
           IconButton(
-              onPressed: () {
-                //edit
-              },
+              onPressed: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => AddEventPage(
+                            event: event,
+                          ))),
               icon: Icon(Icons.edit)),
           IconButton(
               onPressed: () async {
@@ -48,7 +52,6 @@ class EventDetails extends StatelessWidget {
                             )) ??
                     false;
                 if (confirm) {
-                  //TODO : delete and pop
                   deleteEvent(event.id);
                   Navigator.pop(context);
                 }

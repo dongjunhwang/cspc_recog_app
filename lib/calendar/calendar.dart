@@ -160,10 +160,15 @@ class _CalendarState extends State<Calendar> {
                     final event = getEventsFromDay[index];
                     return ListTile(
                         title: Text(event.title),
-                        trailing: IconButton(
+                        /*trailing: IconButton(
                           icon: Icon(Icons.edit),
-                          onPressed: () => Container(),
-                        ),
+                          onPressed: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => AddEventPage(
+                                        event: event,
+                                      ))),
+                        ),*/
                         subtitle:
                             Text(DateFormat("a hh:mm").format(event.date)),
                         onTap: () => Navigator.push(
@@ -189,7 +194,6 @@ class _CalendarState extends State<Calendar> {
             icon: Icon(Icons.add)),
       );
     } else {
-      print("in else");
       _fetchEvent();
       return const Center(child: CircularProgressIndicator());
     }
