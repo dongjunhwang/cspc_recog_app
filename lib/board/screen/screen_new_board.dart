@@ -5,8 +5,8 @@ import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 
 class NewBoardScreen extends StatefulWidget{
-  int group_id;
-  NewBoardScreen({this.group_id});
+  int groupId;
+  NewBoardScreen({this.groupId});
   @override
   _NewBoardScreenState createState() => _NewBoardScreenState();
 }
@@ -83,7 +83,7 @@ class _NewBoardScreenState extends State<NewBoardScreen>{
                         if(formKey.currentState.validate()){
                           print('form 완료');
                           this.formKey.currentState.save();
-                          _createBoard(widget.group_id).whenComplete((){
+                          _createBoard(widget.groupId).whenComplete((){
                             return Navigator.pop(context);
                           });
                         }

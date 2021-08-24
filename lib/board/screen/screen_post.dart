@@ -6,8 +6,7 @@ import 'package:like_button/like_button.dart';
 import 'package:cspc_recog/urls.dart';
 import 'package:http/http.dart' as http;
 class PostScreen extends StatefulWidget {
-
-  PostList post;
+  Post post;
   List<Comment> comments = [];
   List<ImageUrl> images = [];
   int id;
@@ -20,13 +19,15 @@ class PostScreen extends StatefulWidget {
 class _PostScreenState extends State<PostScreen> {
   final formKey = GlobalKey<FormState>();
 
-  String name;
+  //임시 profileId, nickName
+  int profileId = 1;
+  String nickName = "승민";
   String content;
 
   _sendComment(int pk) async{
     print(pk.toString());
     var request = http.MultipartRequest('POST',Uri.parse(UrlPrefix.urls+'board/comment/'+pk.toString()));
-    request.fields['author'] = name;
+    request.fields['author'] = profileId.toString();
     request.fields['contents']= content;
     request.fields['post_id'] = pk.toString();
 
@@ -84,7 +85,7 @@ class _PostScreenState extends State<PostScreen> {
     );
   }
 
-  Widget postView(PostList post, double width, double height) {
+  Widget postView(Post post, double width, double height) {
     double buttonSize = 30.0;
     SwiperController _controller = SwiperController();
     return Container(
@@ -113,7 +114,7 @@ class _PostScreenState extends State<PostScreen> {
                 width : width*0.8,
                 padding: EdgeInsets.only(top: width * 0.012),
                 child: Text(
-                  '작성자:'+post.author,
+                  '작성자:'+post.nickName,
                   textAlign: TextAlign.center,
                   maxLines:2,
                   style: TextStyle(
@@ -229,7 +230,7 @@ class _PostScreenState extends State<PostScreen> {
     final response = await http.post(
         Uri.parse(UrlPrefix.urls+'board/like/'+widget.id.toString()),
         body: <String,String>{
-          'profile': '1', //profile id
+          'profile': profileId.toString(), //profile id
         }
     );
     if(response.statusCode == 200) {
@@ -309,7 +310,7 @@ class _PostScreenState extends State<PostScreen> {
                       width : width*0.8,
                       padding: EdgeInsets.fromLTRB(width * 0.05, width*0.02, 0, width*0.001),
                       child: Text(
-                        comments[i].author,
+                        comments[i].nickName,
                         textAlign: TextAlign.left,
                         maxLines:2,
                         style: TextStyle(
@@ -353,28 +354,6 @@ class _PostScreenState extends State<PostScreen> {
                   TextFormField(
                     decoration: const InputDecoration(
                       border: OutlineInputBorder(),
-                      fillColor: Colors.white,
-                      hoverColor: Colors.white,
-                      hintText: '이름을 입력하세요',
-                      labelText: '이름',
-                    ),
-                    onSaved: (val) {
-                      this.name = val;
-                    },
-                    validator: (val) {
-                      if (val.length < 1) {
-                        return '이름은 비어있으면 안됩니다';
-                      }
-                      return null;
-                    },
-                    //autovalidateMode: AutovalidateMode.always,
-                  ),
-
-                  ///이름
-                  Container(height: height * 0.012),
-                  TextFormField(
-                    decoration: const InputDecoration(
-                      border: OutlineInputBorder(),
                       hintText: '내용을 입력하세요',
                       labelText: '내용',
                     ),
@@ -387,8 +366,7 @@ class _PostScreenState extends State<PostScreen> {
                       }
                       return null;
                     },
-                  )
-                  ///내용
+                  )///내용
                 ]
                 )
             )
@@ -413,7 +391,7 @@ class _PostScreenState extends State<PostScreen> {
                 _sendComment(widget.post.id).whenComplete((){
                   setState(() {
                     Comment comment=  new Comment();
-                    comment.author = name;
+                    comment.nickName = nickName;
                     comment.contents = content;
                     comment.postId = widget.post.id;
                     widget.comments.add(comment);

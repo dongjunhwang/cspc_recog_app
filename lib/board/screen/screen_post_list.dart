@@ -14,9 +14,9 @@ import 'package:http/http.dart' as http;
 import 'package:cspc_recog/urls.dart';
 
 class ListScreen extends StatefulWidget{
-  List<PostList> posts;
-  int board_id;
-  ListScreen({this.posts,this.board_id});
+  List<Post> posts;
+  int boardId;
+  ListScreen({this.posts,this.boardId});
 
   @override
   _ListScreenState createState() => _ListScreenState();
@@ -85,7 +85,7 @@ class _ListScreenState extends State<ListScreen>{
                             loop:true,
                             itemCount:widget.posts.length,
                             itemBuilder:(BuildContext context, int index){
-                              return _buildListView(widget.posts[index],width,height);
+                              return buildListView(widget.posts[index],width,height);
                             }
                         )
                     )
@@ -114,7 +114,7 @@ class _ListScreenState extends State<ListScreen>{
                         onPressed: () {
                           return Navigator.push(
                               context, MaterialPageRoute(builder: (context) =>
-                              NewPostScreen(board_id:widget.board_id)));
+                              NewPostScreen(board_id:widget.boardId)));
                         },
                       ),
 
@@ -127,7 +127,7 @@ class _ListScreenState extends State<ListScreen>{
         )
     );
   }
-  Widget _buildListView(PostList post, double width, double height){
+  Widget buildListView(Post post, double width, double height){
     return Container(
       decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(30),
@@ -163,7 +163,7 @@ class _ListScreenState extends State<ListScreen>{
             width : width*0.8,
             padding: EdgeInsets.only(top: width * 0.012),
             child: Text(
-              '작성자:'+post.author,
+              '작성자:'+post.nickName,
               textAlign: TextAlign.center,
               maxLines:2,
               style: TextStyle(
@@ -223,9 +223,7 @@ class _ListScreenState extends State<ListScreen>{
                     });
                   },
                 ),
-
               ),
-
             ),
           ),
           Container(
@@ -252,9 +250,7 @@ class _ListScreenState extends State<ListScreen>{
                     }
                   },
                 ),
-
               ),
-
             ),
           ),
         ],
@@ -262,18 +258,3 @@ class _ListScreenState extends State<ListScreen>{
     );
   }
 }
-
-/*
-class PostBuilder extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return ListView.builder(
-      padding: const EdgeInsets.all(8),
-      itemCount: posts.length + 1,
-      itemBuilder: (BuildContext context, int index) {
-        if (index == 0) return HeaderTile();
-        return PersonTile(people[index-1]);
-      },
-    );
-  }
-}*/
