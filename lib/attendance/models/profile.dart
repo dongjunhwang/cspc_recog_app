@@ -20,7 +20,7 @@ class ProfileModel {
   });
   factory ProfileModel.fromJson(Map<String, dynamic> json) {
     return ProfileModel(
-      profileId: json['Profile_id'],
+      profileId: json['id'],
       nickName: json['nick_name'],
       isOnline: json['is_online'],
       lastVisitTime: DateTime.parse(json['last_visit_time']),

@@ -1,3 +1,4 @@
+import 'package:cspc_recog/attendance/profileDrawer.dart';
 import 'package:cspc_recog/auth/auth.dart';
 import 'package:cspc_recog/calendar/calendar.dart';
 import 'package:cspc_recog/attendance/mainPage.dart';
@@ -39,6 +40,7 @@ class MyMainPage extends StatefulWidget {
 
 class _MyMainPageState extends State<MyMainPage> {
   int _currentIndex = 0;
+  GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   final List<Widget> _children = [AttendancePage(), BoardPage(), Calendar()];
   final List _title = ["Attendance", "Board", "Calendar"];
@@ -51,27 +53,39 @@ class _MyMainPageState extends State<MyMainPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: Text(_title[_currentIndex]),
-        ),
-        body: _children[_currentIndex],
-        bottomNavigationBar: BottomNavigationBar(
-            type: BottomNavigationBarType.fixed,
-            onTap: _onTap,
-            currentIndex: _currentIndex,
-            items: [
-              new BottomNavigationBarItem(
-                icon: Icon(Icons.people),
-                title: Text('Attendance'),
-              ),
-              new BottomNavigationBarItem(
-                icon: Icon(Icons.dashboard),
-                title: Text('Board'),
-              ),
-              new BottomNavigationBarItem(
-                icon: Icon(Icons.calendar_today),
-                title: Text('Calendar'),
-              )
-            ]));
+      key: _scaffoldKey,
+      appBar: AppBar(
+        title: Text(_title[_currentIndex]),
+        automaticallyImplyLeading: false,
+        actions: [
+          IconButton(
+              icon: Icon(Icons.account_circle_rounded),
+              onPressed: () => _scaffoldKey.currentState.openEndDrawer()),
+        ],
+      ),
+      body: _children[_currentIndex],
+      bottomNavigationBar: BottomNavigationBar(
+        type: BottomNavigationBarType.fixed,
+        onTap: _onTap,
+        currentIndex: _currentIndex,
+        items: [
+          new BottomNavigationBarItem(
+            icon: Icon(Icons.people),
+            title: Text('Attendance'),
+          ),
+          new BottomNavigationBarItem(
+            icon: Icon(Icons.dashboard),
+            title: Text('Board'),
+          ),
+          new BottomNavigationBarItem(
+            icon: Icon(Icons.calendar_today),
+            title: Text('Calendar'),
+          )
+        ],
+      ),
+      endDrawer: Drawer(
+        child: ProfileDrawerPage(),
+      ),
+    );
   }
 }
