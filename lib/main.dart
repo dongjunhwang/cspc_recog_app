@@ -1,6 +1,7 @@
 import 'package:cspc_recog/calendar/calendar.dart';
 import 'package:cspc_recog/attendance/mainPage.dart';
 import 'package:cspc_recog/board/screen/screen_home.dart';
+import 'package:cspc_recog/auth/auth.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -23,7 +24,7 @@ class MainApp extends StatelessWidget {
         const Locale('ko', 'KR'),
       ],
       title: 'Main App',
-      home: MyMainPage(title: 'Demo Version CMB'),
+      home: LoginPage(),
     );
   }
 }
