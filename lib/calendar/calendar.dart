@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:cspc_recog/calendar/event_details.dart';
 import 'package:cspc_recog/calendar/model_event.dart';
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
@@ -18,6 +19,7 @@ class _CalendarState extends State<Calendar> {
   List<CalendarEvent> eventList = [];
   Map<DateTime, List<CalendarEvent>> eventDict =
       Map<DateTime, List<CalendarEvent>>();
+  bool load = false;
 
   CalendarFormat format = CalendarFormat.month;
   DateTime selectedDay = DateTime.now();
@@ -28,30 +30,32 @@ class _CalendarState extends State<Calendar> {
   @override
   void initState() {
     super.initState();
-    _fetchEvent();
   }
 
   Future _fetchEvent() async {
-    final response =
-        await http.get(Uri.parse(UrlPrefix.urls + 'calendars/event/1'));
-    if (response.statusCode == 200) {
-      setState(() {
-        eventList = parseEvents(utf8.decode(response.bodyBytes));
-      });
-      //print(eventList);
-      for (CalendarEvent e in eventList) {
-        DateTime key = new DateTime(e.date.year, e.date.month, e.date.day);
+    try {
+      final response =
+          await http.get(Uri.parse(UrlPrefix.urls + 'calendars/1/event'));
+      if (response.statusCode == 200) {
+        setState(() {
+          eventList = parseEvents(utf8.decode(response.bodyBytes));
+        });
+        //print(eventList);
+        for (CalendarEvent e in eventList) {
+          DateTime key = new DateTime(e.date.year, e.date.month, e.date.day);
 
-        if (!eventDict.containsKey(key)) {
-          eventDict[key] = [e];
-        } else {
-          List<CalendarEvent> exsitingValue = eventDict[key];
-          exsitingValue.add(e);
+          if (!eventDict.containsKey(key)) {
+            eventDict[key] = [e];
+          } else {
+            List<CalendarEvent> exsitingValue = eventDict[key];
+            exsitingValue.add(e);
+          }
         }
+        load = true;
+        //print(eventDict);
       }
-      //print(eventDict);
-    } else {
-      throw Exception('falied!');
+    } catch (e) {
+      print(e);
     }
   }
 
@@ -59,12 +63,6 @@ class _CalendarState extends State<Calendar> {
     DateTime dateChangedFormat = new DateTime(date.year, date.month, date.day);
     return eventDict[dateChangedFormat] ?? [];
   }
-  /*Future<List<CalendarEvent>> _getEventsFromDay (
-    Map<DateTime, List<CalendarEvent>> eventDict, DateTime date) async{
-  DateTime dateChangedFormat = new DateTime(date.year, date.month, date.day);
-  List<CalendarEvent> events = eventDict[dateChangedFormat];
-  return events;
-}*/
 
   @override
   void dispose() {
@@ -78,7 +76,7 @@ class _CalendarState extends State<Calendar> {
     double width = screenSize.width;
     double height = screenSize.height;
 
-    if (eventDict != null) {
+    if (load) {
       var getEventsFromDay = _getEventsFromDay(selectedDay);
       return Scaffold(
         resizeToAvoidBottomInset: false,
@@ -157,18 +155,28 @@ class _CalendarState extends State<Calendar> {
             Expanded(
               child: ListView.builder(
                   itemCount: getEventsFromDay.length,
-                  shrinkWrap: true,
-                  //physics: NeverScrollableScrollPhysics(),
+                  //shrinkWrap: true,
                   itemBuilder: (BuildContext context, int index) {
                     final event = getEventsFromDay[index];
                     return ListTile(
-                      title: Text(event.title),
-                      trailing: IconButton(
-                        icon: Icon(Icons.edit),
-                        onPressed: () => Container(),
-                      ),
-                      subtitle: Text(DateFormat("a hh:mm").format(event.date)),
-                    );
+                        title: Text(event.title),
+                        /*trailing: IconButton(
+                          icon: Icon(Icons.edit),
+                          onPressed: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => AddEventPage(
+                                        event: event,
+                                      ))),
+                        ),*/
+                        subtitle:
+                            Text(DateFormat("a hh:mm").format(event.date)),
+                        onTap: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => EventDetails(
+                                      event: event,
+                                    ))));
                   }),
             ),
           ],
@@ -186,7 +194,8 @@ class _CalendarState extends State<Calendar> {
             icon: Icon(Icons.add)),
       );
     } else {
-      return CircularProgressIndicator();
+      _fetchEvent();
+      return const Center(child: CircularProgressIndicator());
     }
   }
 }
