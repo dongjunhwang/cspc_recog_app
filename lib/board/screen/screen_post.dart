@@ -6,8 +6,7 @@ import 'package:like_button/like_button.dart';
 import 'package:cspc_recog/urls.dart';
 import 'package:http/http.dart' as http;
 class PostScreen extends StatefulWidget {
-
-  PostList post;
+  Post post;
   List<Comment> comments = [];
   List<ImageUrl> images = [];
   int id;
@@ -18,6 +17,29 @@ class PostScreen extends StatefulWidget {
 }
 
 class _PostScreenState extends State<PostScreen> {
+  final formKey = GlobalKey<FormState>();
+
+  //임시 profileId, nickName
+  int profileId = 1;
+  String nickName = "승민";
+  String content;
+
+  _sendComment(int pk) async{
+    print(pk.toString());
+    var request = http.MultipartRequest('POST',Uri.parse(UrlPrefix.urls+'board/comment/'+pk.toString()));
+    request.fields['author'] = profileId.toString();
+    request.fields['contents']= content;
+    request.fields['post_id'] = pk.toString();
+
+    final response = await request.send();
+    if(response.statusCode == 201) {
+      print("send complete!");
+    }
+    else{
+      throw Exception('falied!');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     Size screenSize = MediaQuery
@@ -31,12 +53,12 @@ class _PostScreenState extends State<PostScreen> {
       right:true,
       bottom: false,
       child: Scaffold(
-        resizeToAvoidBottomInset: false,
+        resizeToAvoidBottomInset: true,
         backgroundColor: Colors.deepOrange,
         body: SingleChildScrollView(
           child: Center(
             child: Column(
-            mainAxisSize: MainAxisSize.min,
+            //mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
               Container(
@@ -53,7 +75,8 @@ class _PostScreenState extends State<PostScreen> {
                 ),
               ),
               postView(widget.post, width, height),
-              commentListView(widget.comments, width, height)
+              commentListView(widget.comments, width, height),
+              commentFormView(width,height)
             ],
           ),
         )
@@ -62,7 +85,7 @@ class _PostScreenState extends State<PostScreen> {
     );
   }
 
-  Widget postView(PostList post, double width, double height) {
+  Widget postView(Post post, double width, double height) {
     double buttonSize = 30.0;
     SwiperController _controller = SwiperController();
     return Container(
@@ -74,7 +97,7 @@ class _PostScreenState extends State<PostScreen> {
         child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
-              Container( ///제목
+              Container(
                 width : width*0.8,
                 padding: EdgeInsets.only(top: width * 0.012),
                 child: Text(
@@ -86,20 +109,20 @@ class _PostScreenState extends State<PostScreen> {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-              ),
-              Container( ///작성자
+              ),///제목
+              Container(
                 width : width*0.8,
                 padding: EdgeInsets.only(top: width * 0.012),
                 child: Text(
-                  '작성자:'+post.author,
+                  '작성자:'+post.nickName,
                   textAlign: TextAlign.center,
                   maxLines:2,
                   style: TextStyle(
                     fontSize:width*0.040,
                   ),
                 ),
-              ),
-              Container( ///내용
+              ),///작성자
+              Container(
                 width : width*0.8,
                 padding: EdgeInsets.all(width * 0.024),
                 child: Text(
@@ -109,26 +132,56 @@ class _PostScreenState extends State<PostScreen> {
                     fontSize:width*0.040,
                   ),
                 ),
+              ),///내용
+              //(post.hasImage>1)
+              (widget.images.length > 1)
+                  ? ((widget.images.length == 1)?
+              Container(
+                width: width*0.8,
+                child: Image.network(UrlPrefix.urls + widget.images[0].imgUrl.substring(1)),
+              )
+                  :Container(
+                width:width*0.7,
+                child:SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+
+                  child: Row(
+                    //mainAxisSize: MainAxisSize.min,
+                    //crossAxisAlignment: CrossAxisAlignment.center,
+                    children: <Widget>[
+                      imageListView(widget.images, width, height),
+                    ],
+                  ),
+                ),
+              ))
+                  : Container(
+                  width: width*0.8,
+                  height:height*0.001
               ),
               (post.hasImage)
-              ?Container(
+              ? ((widget.images.length == 1)?
+                  Container(
+                    width: width*0.8,
+                    child: Image.network(UrlPrefix.urls + widget.images[0].imgUrl.substring(1)),
+                  )
+              :Container(
                 width: width*0.5,
-                height: height*0.5,
+                height: width*0.5,
                 child: Swiper(
                     controller: _controller,
-                    loop:true,
+                    loop:false,
+                    pagination: SwiperPagination(),
                     itemCount:widget.images.length,
                     itemBuilder:(BuildContext context, int index){
                       return imagesView(widget.images[index],width,height);
                     }
                 ),
-              )
+              ))
               : Container(
                 width: width*0.8,
-                height:height*0.1
-              )
-              ,
-              Container( ///좋아요
+                height:height*0.001
+              ),///이미지*/
+              Container(
                 width: width * 0.8,
                 //padding: EdgeInsets.only(left:width * 0.024),
                 child: LikeButton(
@@ -165,7 +218,7 @@ class _PostScreenState extends State<PostScreen> {
                   },
                   onTap: onLikeButtonTapped,
                 ),
-              )
+              )///좋아요
             ]
         )
     );
@@ -177,7 +230,7 @@ class _PostScreenState extends State<PostScreen> {
     final response = await http.post(
         Uri.parse(UrlPrefix.urls+'board/like/'+widget.id.toString()),
         body: <String,String>{
-          'profile': '1', //profile id
+          'profile': profileId.toString(), //profile id
         }
     );
     if(response.statusCode == 200) {
@@ -192,10 +245,39 @@ class _PostScreenState extends State<PostScreen> {
     return !isLiked;
   }
 
+  Widget imageListView(List<ImageUrl> images, double width, double height){
+    List<Widget> _children = [];
+    for (int i=0;i<images.length;i++){
+      if(i!=0)
+        _children.add(Container(width:width*0.01));
+      _children.add(imagesView(images[i], width, height));
+
+    }
+
+    return Container(
+      child:Row(
+        children: <Widget>[
+          Row(
+            children: _children,
+          )
+        ],
+      )
+    );
+  }
+
   Widget imagesView(ImageUrl image, double width, double height) {
     return Container(
-      width: width * 0.3,
-      child: Image.network(UrlPrefix.urls + image.imgUrl.substring(1)),
+      width:width*0.3,
+      height: width*0.3,
+      decoration: BoxDecoration(
+      image: DecorationImage(
+        image:NetworkImage(UrlPrefix.urls + image.imgUrl.substring(1)),
+          fit:BoxFit.cover
+        )
+      ),
+
+      //Image.network(UrlPrefix.urls + image.imgUrl.substring(1))
+
     );
   }
 
@@ -215,7 +297,6 @@ class _PostScreenState extends State<PostScreen> {
   List<Widget> commentCandidates(double width, List<Comment> comments){
     List<Widget> _children = [];
     for(int i=0;i<comments.length;i++){
-      print('comment+'+i.toString());
       _children.add(
           Container(
               decoration: BoxDecoration(
@@ -229,7 +310,7 @@ class _PostScreenState extends State<PostScreen> {
                       width : width*0.8,
                       padding: EdgeInsets.fromLTRB(width * 0.05, width*0.02, 0, width*0.001),
                       child: Text(
-                        comments[i].author,
+                        comments[i].nickName,
                         textAlign: TextAlign.left,
                         maxLines:2,
                         style: TextStyle(
@@ -257,10 +338,75 @@ class _PostScreenState extends State<PostScreen> {
     return _children;
   }
 
-  void loadImages(){
-    //final response = await http.get(Uri.parse(UrlPrefix.urls+'board/comment/'+pk.toString()));
-    
+  Widget commentFormView(double width, double height){
+    return Row(
+      children: [
+        Container(
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(5),
+              border: Border.all(color: Colors.white),
+              color: Colors.white
+          ),
+          width:width*0.8,
+            child: Form(
+                key: this.formKey,
+                child: Column(children: [
+                  TextFormField(
+                    decoration: const InputDecoration(
+                      border: OutlineInputBorder(),
+                      hintText: '내용을 입력하세요',
+                      labelText: '내용',
+                    ),
+                    onSaved: (val) {
+                      this.content = val;
+                    },
+                    validator: (val) {
+                      if (val.length < 1) {
+                        return '내용은 비어있으면 안됩니다';
+                      }
+                      return null;
+                    },
+                  )///내용
+                ]
+                )
+            )
+        ),
+        ButtonTheme(
+          minWidth:width*0.3,
+          height:height*0.2,
+          shape:RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          child:ElevatedButton(
+            child:Text(
+              '댓글 등록',
+              style:TextStyle(color:Colors.black,fontSize: width*0.02),
 
+            ),
+            style:ButtonStyle(
+              backgroundColor: MaterialStateProperty.all<Color>(Colors.white),
+            ),
+            onPressed: () async{
+              if(formKey.currentState.validate()){
+                print('form 완료');
+                this.formKey.currentState.save();
+                _sendComment(widget.post.id).whenComplete((){
+                  setState(() {
+                    Comment comment=  new Comment();
+                    comment.nickName = nickName;
+                    comment.contents = content;
+                    comment.postId = widget.post.id;
+                    widget.comments.add(comment);
+                    this.formKey.currentState.reset();
+                  });
+                });
+              }
+              else{
+                print('nono 안됨');
+              }
+            },
+          ),
+        ),
+      ],
+    );
   }
 
 }
