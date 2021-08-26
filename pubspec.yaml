@@ -32,7 +32,7 @@ dependencies:
 
   #For Attendance
   http:
-  provider:
+  flutter_icons: ^1.1.0
 
   #For Board
   flutter_swiper:
