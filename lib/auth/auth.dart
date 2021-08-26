@@ -9,6 +9,8 @@ import 'package:cspc_recog/auth/models/loginUser.dart';
 import 'package:flutter/services.dart';
 import 'package:cspc_recog/auth/register.dart';
 
+import 'models/user.dart';
+
 class LoginPage extends StatefulWidget {
   @override
   State<StatefulWidget> createState() => new _LoginPageState();
@@ -17,6 +19,7 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   bool _isLoading = false;
   LoginUser myLogin;
+  User myUser;
 
   @override
   Widget build(BuildContext context) {
@@ -66,6 +69,9 @@ class _LoginPageState extends State<LoginPage> {
         print(myLogin.myProfileList);
         print(myLogin.token);
 
+        userGet(myLogin.token);
+        logOut(myLogin.token);
+
         setState(() {
           _isLoading = false;
         });
@@ -79,6 +85,58 @@ class _LoginPageState extends State<LoginPage> {
         _isLoading = false;
       });
       print(response.body);
+    }
+  }
+
+  userGet(String token) async {
+    String knoxToken = 'Token '+ token;
+    final response = await http.get(
+      Uri.parse(UrlPrefix.urls + "users/auth/user/"),
+      headers: <String, String>{
+        'Authorization': knoxToken,
+      },
+
+    );
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+
+      if (data != null) {
+        myUser = User.fromJson(data);
+
+        print(myUser.userName);
+
+        /*
+        setState(() {
+          _isLoading = false;
+        });*/
+
+      }
+    } else {
+      /*
+      setState(() {
+        _isLoading = false;
+      });*/
+    }
+  }
+
+  logOut(String token) async {
+    String knoxToken = 'Token '+ token;
+
+    final response = await http.post(
+      Uri.parse(UrlPrefix.urls + "users/auth/logout/"),
+      headers: <String, String>{
+        'Authorization': knoxToken,
+      },
+    );
+
+    print("logout");
+    print(response.statusCode);
+
+    if (response.statusCode == 204) {
+      print("logout!");
+    } else {
+      print("logout false");
     }
   }
 
