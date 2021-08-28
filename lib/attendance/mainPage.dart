@@ -31,32 +31,31 @@ class _AttendancePageState extends State<AttendancePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: FutureBuilder<List<ProfileModel>>(
-          future: getProfileList(context),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.done) {
-              List<ProfileModel> profileList = snapshot.data;
-              return Container(
-                child: Column(
-                  children: [
-                    visitTimeRanking(profileList),
-                    profileCount(profileList),
-                    Expanded(
-                      child: profileView(profileList),
-                    ),
-                  ],
-                ),
-              );
-            } else {
-              // Otherwise, display a loading indicator.
-              return const Center(child: CircularProgressIndicator());
-            }
-          }),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
+      body: GestureDetector(
+        onVerticalDragUpdate: (dragUpdateDetails) {
           setState(() {});
         },
-        child: Text('reload'),
+        child: FutureBuilder<List<ProfileModel>>(
+            future: getProfileList(context),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.done) {
+                List<ProfileModel> profileList = snapshot.data;
+                return Container(
+                  child: Column(
+                    children: [
+                      visitTimeRanking(profileList),
+                      profileCount(profileList),
+                      Expanded(
+                        child: profileView(profileList),
+                      ),
+                    ],
+                  ),
+                );
+              } else {
+                // Otherwise, display a loading indicator.
+                return const Center(child: CircularProgressIndicator());
+              }
+            }),
       ),
     );
   }
@@ -108,7 +107,7 @@ class _AttendancePageState extends State<AttendancePage> {
                 width: MediaQuery.of(context).size.width,
                 child: Column(
                   children: [
-                    for (int i = 0; i < 3; i++)
+                    for (int i = 0; i < min(3, profileList.length); i++)
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
