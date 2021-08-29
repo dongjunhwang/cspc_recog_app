@@ -1,5 +1,4 @@
 import 'package:cspc_recog/main.dart';
-//import 'package:cspc_recog/auth/groupSelect.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -13,12 +12,12 @@ import 'package:cspc_recog/auth/register.dart';
 
 import 'models/user.dart';
 
-class LoginPage extends StatefulWidget {
+class GroupSelectPage extends StatefulWidget {
   @override
-  State<StatefulWidget> createState() => new _LoginPageState();
+  State<StatefulWidget> createState() => new _GroupSelectPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _GroupSelectPageState extends State<GroupSelectPage> {
   bool _isLoading = false;
   LoginUser myLogin;
   User myUser;
@@ -31,7 +30,7 @@ class _LoginPageState extends State<LoginPage> {
       body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
-              colors: [Colors.blue, Colors.white70],
+              colors: [Colors.white70],
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter),
         ),
@@ -48,17 +47,14 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  signIn(String id, pass) async {
-    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
-
+  getUserGroup(String id) async {
     final response = await http.post(
-      Uri.parse(UrlPrefix.urls + "users/auth/login/"),
+      Uri.parse(UrlPrefix.urls + "users/auth/user/group/"),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
       body: jsonEncode({
-        "username": id,
-        "password": pass,
+        "user_id": id,
       }),
     );
 
@@ -71,26 +67,12 @@ class _LoginPageState extends State<LoginPage> {
         });
         myLogin = LoginUser.fromJson(data);
 
-        userGet(myLogin.token);
-
-        /*
-        print(myUser.userId);
-        print(myUser.userName);
-        */
-
-
-        //logOut(myLogin.token);
-
-        sharedPreferences.setString("token", myLogin.token);
-        //print(sharedPreferences.getString("token"));
-
 
         Navigator.of(context).pushAndRemoveUntil(
             MaterialPageRoute(builder: (BuildContext context) => MyMainPage()),
                 (Route<dynamic> route) => false);
       }
     } else {
-      print("login false");
       setState(() {
         _isLoading = false;
       });
@@ -112,47 +94,15 @@ class _LoginPageState extends State<LoginPage> {
 
       if (data != null) {
         myUser = User.fromJson(data);
-        print(myUser.userId);
+
         print(myUser.userName);
+        print(myUser.userId);
 
-        /*
-        setState(() {
-          _isLoading = false;
-        });*/
-
+        return myUser;
       }
-    } else {
-      /*
-      setState(() {
-        _isLoading = false;
-      });*/
     }
   }
 
-
-  /*
-    토큰 넣어주면 해당 토큰 사라짐
-
-   */
-  logOut(String token) async {
-    String knoxToken = 'Token '+ token;
-
-    final response = await http.post(
-      Uri.parse(UrlPrefix.urls + "users/auth/logout/"),
-      headers: <String, String>{
-        'Authorization': knoxToken,
-      },
-    );
-
-    print("logout");
-    print(response.statusCode);
-
-    if (response.statusCode == 204) {
-      print("logout!");
-    } else {
-      print("logout false");
-    }
-  }
 
   Container buttonSection() {
     return Container(
@@ -179,7 +129,7 @@ class _LoginPageState extends State<LoginPage> {
             setState(() {
               _isLoading = true;
             });
-            signIn(idController.text, passwordController.text);
+            //signIn(idController.text, passwordController.text);
           },
         ),
 
@@ -201,8 +151,7 @@ class _LoginPageState extends State<LoginPage> {
             });
 
             Navigator.of(context).push(
-                //MaterialPageRoute(builder: (BuildContext context) => RegisterPage()));
-                MaterialPageRoute(builder: (BuildContext context) => MyMainPage()));
+                MaterialPageRoute(builder: (BuildContext context) => RegisterPage()));
 
           },
         )
@@ -254,9 +203,9 @@ class _LoginPageState extends State<LoginPage> {
     return Container(
       margin: EdgeInsets.only(top: 50.0),
       padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 30.0),
-      child: Text("Login",
+      child: Text("GroupSection",
           style: TextStyle(
-              color: Colors.white70,
+              color: Colors.indigo,
               fontSize: 40.0,
               fontWeight: FontWeight.bold)),
     );
