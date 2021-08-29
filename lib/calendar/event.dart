@@ -7,13 +7,6 @@ import 'package:http/http.dart' as http;
 import '../urls.dart';
 import 'model_event.dart';
 
-class Event {
-  final String title;
-  Event({this.title});
-
-  String toString() => this.title;
-}
-
 class AddEventPage extends StatefulWidget {
   final DateTime selectedDate;
   final CalendarEvent event;
@@ -44,6 +37,8 @@ class _AddEventPageState extends State<AddEventPage> {
             color: Colors.blue,
           ),
           onPressed: () {
+            FocusScopeNode currentFocus = FocusScope.of(context);
+            currentFocus.unfocus();
             Navigator.pop(context);
           },
         ),
@@ -55,10 +50,13 @@ class _AddEventPageState extends State<AddEventPage> {
                 bool validated = _formKey.currentState.validate();
                 if (validated) {
                   _formKey.currentState.save();
+
                   final data =
                       Map<String, dynamic>.from(_formKey.currentState.value);
 
-                  data['date'] = data['date'].toUtc().toIso8601String();
+                  data['start_date'] =
+                      data['start_date'].toUtc().toIso8601String();
+                  data['end_date'] = data['end_date'].toUtc().toIso8601String();
 
                   print(data);
                   if (widget.event == null) {
@@ -72,7 +70,8 @@ class _AddEventPageState extends State<AddEventPage> {
                           {
                             "title": data['title'],
                             "description": data['description'],
-                            "date": data['date']
+                            "start_date": data['start_date'],
+                            "end_date": data['end_date'],
                           }
                         ],
                       ),
@@ -90,14 +89,17 @@ class _AddEventPageState extends State<AddEventPage> {
                           {
                             "title": data['title'],
                             "description": data['description'],
-                            "date": data['date']
-                          }
+                            "start_date": data['start_date'],
+                            "end_date": data['end_date']
+                          },
                         ],
                       ),
                     );
                   }
+                  FocusScopeNode currentFocus = FocusScope.of(context);
+                  currentFocus.unfocus();
+                  Navigator.pop(context);
                 }
-                Navigator.pop(context);
               },
               child: Text("Save"),
             ),
@@ -127,11 +129,30 @@ class _AddEventPageState extends State<AddEventPage> {
                   FormBuilderDateTimePicker(
                     validator: FormBuilderValidators.compose(
                         [FormBuilderValidators.required(context)]),
-                    name: 'date',
+                    name: 'start_date',
                     initialValue: widget.event != null
-                        ? widget.event.date
+                        ? widget.event.start_date
                         : widget.selectedDate ?? DateTime.now(),
-                    fieldHintText: "Add Date",
+                    inputType: InputType.both,
+                    format: DateFormat("yyyy.MM.dd a hh:mm"),
+                    decoration: InputDecoration(
+                        border: InputBorder.none,
+                        prefixIcon: Icon(Icons.calendar_today_sharp)),
+                  ),
+                  Divider(),
+                  FormBuilderDateTimePicker(
+                    validator: (val) {
+                      var startDate = (_formKey.currentState
+                          .fields['start_date']?.value as DateTime);
+                      if (val.isBefore(startDate)) {
+                        return "End date cannot be before start date";
+                      }
+                      return null;
+                    },
+                    name: 'end_date',
+                    initialValue: widget.event != null
+                        ? widget.event.end_date
+                        : widget.selectedDate ?? DateTime.now(),
                     inputType: InputType.both,
                     format: DateFormat("yyyy.MM.dd a hh:mm"),
                     decoration: InputDecoration(

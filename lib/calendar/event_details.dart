@@ -4,7 +4,7 @@ import 'model_event.dart';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
 import '../urls.dart';
-import 'dart:convert';
+import 'event_utils.dart';
 
 class EventDetails extends StatelessWidget {
   final CalendarEvent event;
@@ -12,6 +12,16 @@ class EventDetails extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    String endDateFormat = "MM.dd EE a hh:mm";
+    if (getOnlyDate(event.start_date)
+        .isAtSameMomentAs(getOnlyDate(event.end_date))) {
+      endDateFormat = "a hh:mm";
+    }
+    String startDateStr =
+        DateFormat("MM.dd EE a hh:mm", "ko-kr").format(event.start_date);
+    String endDateStr =
+        DateFormat(endDateFormat, "ko-kr").format(event.end_date);
+
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
@@ -26,7 +36,7 @@ class EventDetails extends StatelessWidget {
                   MaterialPageRoute(
                       builder: (context) => AddEventPage(
                             event: event,
-                          ))),
+                          ))).then((value) => Navigator.pop(context)),
               icon: Icon(Icons.edit)),
           IconButton(
               onPressed: () async {
@@ -67,7 +77,7 @@ class EventDetails extends StatelessWidget {
               event.title,
               style: Theme.of(context).textTheme.headline5,
             ),
-            subtitle: Text(DateFormat("yyyy.MM.dd a hh:mm").format(event.date)),
+            subtitle: Text(startDateStr + " - " + endDateStr),
           ),
           const SizedBox(height: 10.0),
           if (event.description != null)
