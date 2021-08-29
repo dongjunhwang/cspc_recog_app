@@ -57,12 +57,15 @@ class _MyMainPageState extends State<MyMainPage> {
       appBar: AppBar(
         title: Text(_title[_currentIndex]),
         automaticallyImplyLeading: false,
+        backgroundColor: Colors.transparent,
+        elevation: 0.0,
         actions: [
           IconButton(
               icon: Icon(Icons.account_circle_rounded),
               onPressed: () => _scaffoldKey.currentState.openEndDrawer()),
         ],
       ),
+      extendBodyBehindAppBar: true,
       body: _children[_currentIndex],
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,

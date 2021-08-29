@@ -8,7 +8,8 @@ class ProfileModel {
   final bool isOnline;
   final DateTime lastVisitTime;
   final Duration visitTimeSum;
-  String profileImageUrl;
+  final String profileImageUrl;
+  final String group_name;
 
   ProfileModel({
     this.profileId,
@@ -17,12 +18,14 @@ class ProfileModel {
     this.lastVisitTime,
     this.visitTimeSum,
     this.profileImageUrl,
+    this.group_name,
   });
   factory ProfileModel.fromJson(Map<String, dynamic> json) {
     return ProfileModel(
       profileId: json['id'],
       nickName: json['nick_name'],
       isOnline: json['is_online'],
+      group_name: json['group_id']['group_name'],
       lastVisitTime: DateTime.parse(json['last_visit_time']),
       visitTimeSum: parseDuration(json['visit_time_sum']),
       profileImageUrl: json['profile_image'],
