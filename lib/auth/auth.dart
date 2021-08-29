@@ -20,7 +20,7 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   bool _isLoading = false;
-  LoginUser myLogin;
+  TokenReceiver myToken;
   User myUser;
 
   @override
@@ -69,9 +69,9 @@ class _LoginPageState extends State<LoginPage> {
         setState(() {
           _isLoading = false;
         });
-        myLogin = LoginUser.fromJson(data);
+        myToken = TokenReceiver.fromJson(data);
 
-        userGet(myLogin.token);
+        userGet(myToken.token);
 
         /*
         print(myUser.userId);
@@ -81,7 +81,7 @@ class _LoginPageState extends State<LoginPage> {
 
         //logOut(myLogin.token);
 
-        sharedPreferences.setString("token", myLogin.token);
+        sharedPreferences.setString("token", myToken.token);
         //print(sharedPreferences.getString("token"));
 
 
@@ -201,8 +201,7 @@ class _LoginPageState extends State<LoginPage> {
             });
 
             Navigator.of(context).push(
-                //MaterialPageRoute(builder: (BuildContext context) => RegisterPage()));
-                MaterialPageRoute(builder: (BuildContext context) => MyMainPage()));
+                MaterialPageRoute(builder: (BuildContext context) => RegisterPage()));
 
           },
         )

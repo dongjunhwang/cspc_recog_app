@@ -1,5 +1,5 @@
 import 'package:cspc_recog/main.dart';
-import 'package:cspc_recog/auth/models/registerUser.dart';
+import 'package:cspc_recog/auth/models/loginUser.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -16,7 +16,7 @@ class RegisterPage extends StatefulWidget {
 
 class _RegisterPageState extends State<RegisterPage> {
   bool _isLoading = false;
-  RegisterUser newMemb;
+  TokenReceiver myToken;
 
   @override
   Widget build(BuildContext context) {
@@ -59,11 +59,11 @@ class _RegisterPageState extends State<RegisterPage> {
       final data = json.decode(response.body);
 
       if (data != null) {
-        newMemb = RegisterUser.fromJson(data);
+        myToken = TokenReceiver.fromJson(data);
 
-        print(newMemb.user.userId);
-        print(newMemb.user.userName);
-        print(newMemb.token);
+        print(myToken.token);
+
+
 
         setState(() {
           _isLoading = false;

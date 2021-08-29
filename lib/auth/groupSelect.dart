@@ -19,7 +19,7 @@ class GroupSelectPage extends StatefulWidget {
 
 class _GroupSelectPageState extends State<GroupSelectPage> {
   bool _isLoading = false;
-  LoginUser myLogin;
+  TokenReceiver myLogin;
   User myUser;
 
   @override
@@ -65,7 +65,7 @@ class _GroupSelectPageState extends State<GroupSelectPage> {
         setState(() {
           _isLoading = false;
         });
-        myLogin = LoginUser.fromJson(data);
+        myLogin = TokenReceiver.fromJson(data);
 
 
         Navigator.of(context).pushAndRemoveUntil(
@@ -94,9 +94,6 @@ class _GroupSelectPageState extends State<GroupSelectPage> {
 
       if (data != null) {
         myUser = User.fromJson(data);
-
-        print(myUser.userName);
-        print(myUser.userId);
 
         return myUser;
       }
