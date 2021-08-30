@@ -65,20 +65,22 @@ class _HomeScreenState extends State<BoardPage>{
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children:<Widget>[
-              Center(child:Text('게시판',textScaleFactor: width * 0.01,)),
-              Padding(padding: EdgeInsets.all(width * 0.024)),
-              Text(
-                  '목록',
+              Center(child:
+                Text(
+                  '게시판 목록',
+                  //textScaleFactor: width * 0.01,
                   style:TextStyle(
                     fontSize:width*0.065,
                     fontWeight: FontWeight.bold,
                   )
+                )
               ),
-              //FuterBuilder(
-              // futer: _fetchBoardList(widget.groupId)
-              StreamBuilder(
-                stream: Stream.periodic(Duration(seconds:sec))
-                  .asyncMap((i) => _fetchBoardList(1)),
+              Padding(padding: EdgeInsets.all(width * 0.024)),
+              FutureBuilder(
+               future: _fetchBoardList(widget.groupId),
+              //StreamBuilder(
+                //stream: Stream.periodic(Duration(seconds:sec))
+               //   .asyncMap((i) => _fetchBoardList(1)),
                 builder: (BuildContext context, AsyncSnapshot snapshot) {
                   if (snapshot.hasData == false) {
                     return CircularProgressIndicator();

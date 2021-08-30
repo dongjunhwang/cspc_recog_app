@@ -204,7 +204,7 @@ class _NewPostScreenState extends State<NewPostScreen>{
                         await _fetchPost(postPk);
                         await _fetchComments(postPk);
                         await _fetchImages(postPk);
-                        return Navigator.push(
+                        return Navigator.pushReplacement(
                                   context,
                                   MaterialPageRoute(
                                       builder: (context) =>
