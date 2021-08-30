@@ -18,13 +18,10 @@ class _HomeScreenState extends State<BoardPage>{
   List<Board> boards = [];
   bool isLoading = false;
 
-  int sec = 0;
   _fetchPosts(int boardId) async{
     setState((){
       isLoading = true;
     });
-    //final response = await http.get(Uri.parse('https://lsmin1021.pythonanywhere.com/api/post/'));
-
     //await Future.delayed(Duration(seconds: 3)); ///로딩 테스트
     final response = await http.get(Uri.parse(UrlPrefix.urls+'board/'+boardId.toString()));
     if(response.statusCode == 200) {
@@ -35,21 +32,6 @@ class _HomeScreenState extends State<BoardPage>{
     }
     else{
       throw Exception('falied!');
-    }
-  }
-  _fetchBoardList(int groupId) async{
-    final response = await http.get(Uri.parse(UrlPrefix.urls+'board/group/'+groupId.toString()));
-    if(response.statusCode == 200) {
-      setState(() {
-        sec = 2;
-        boards = parseBoardList(utf8.decode(response.bodyBytes));
-        isLoading = false;
-      });
-      return boards.length;
-    }
-    else{
-      print(groupId);
-      //throw Exception('falied!');
     }
   }
 
@@ -65,20 +47,19 @@ class _HomeScreenState extends State<BoardPage>{
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children:<Widget>[
-              Center(child:Text('게시판',textScaleFactor: width * 0.01,)),
-              Padding(padding: EdgeInsets.all(width * 0.024)),
-              Text(
-                  '목록',
+              Center(child:
+                Text(
+                  '게시판 목록',
+                  //textScaleFactor: width * 0.01,
                   style:TextStyle(
                     fontSize:width*0.065,
                     fontWeight: FontWeight.bold,
                   )
+                )
               ),
-              //FuterBuilder(
-              // futer: _fetchBoardList(widget.groupId)
-              StreamBuilder(
-                stream: Stream.periodic(Duration(seconds:sec))
-                  .asyncMap((i) => _fetchBoardList(1)),
+              Padding(padding: EdgeInsets.all(width * 0.024)),
+              FutureBuilder(
+                future: getBoardList(context,widget.groupId),
                 builder: (BuildContext context, AsyncSnapshot snapshot) {
                   if (snapshot.hasData == false) {
                     return CircularProgressIndicator();
@@ -91,6 +72,7 @@ class _HomeScreenState extends State<BoardPage>{
                       ),
                     );
                   } else {
+                    boards = snapshot.data;
                     return Column(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: <Widget>[
@@ -114,8 +96,11 @@ class _HomeScreenState extends State<BoardPage>{
                       style:ButtonStyle(
                         backgroundColor: MaterialStateProperty.all<Color>(Colors.deepOrange),
                       ),
-                      onPressed: () {
-                          return Navigator.push(context,MaterialPageRoute(builder: (context)=>NewBoardScreen(groupId:1)));
+                      onPressed: () async {
+                          await Navigator.push(context,MaterialPageRoute(builder: (context)=>NewBoardScreen(groupId:1)));
+                          setState(() {
+                            boards = [];
+                          });
                       },
                     ),
                   ),
