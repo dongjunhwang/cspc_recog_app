@@ -1,12 +1,14 @@
 import 'package:cspc_recog/main.dart';
+import 'package:cspc_recog/providers/userData.dart';
 //import 'package:cspc_recog/auth/groupSelect.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 
 import '../urls.dart';
-import 'package:cspc_recog/auth/models/loginUser.dart';
+import 'package:cspc_recog/auth/models/TokenReceiver.dart';
 
 import 'package:flutter/services.dart';
 import 'package:cspc_recog/auth/register.dart';
@@ -22,6 +24,7 @@ class _LoginPageState extends State<LoginPage> {
   bool _isLoading = false;
   TokenReceiver myToken;
   User myUser;
+  User afterUser;
 
   @override
   Widget build(BuildContext context) {
@@ -99,6 +102,9 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   userGet(String token) async {
+    print("userget start");
+    MyLoginUser myLogin = Provider.of<MyLoginUser>(context, listen: false);
+
     String knoxToken = 'Token '+ token;
     final response = await http.get(
       Uri.parse(UrlPrefix.urls + "users/auth/user/"),
@@ -114,6 +120,14 @@ class _LoginPageState extends State<LoginPage> {
         myUser = User.fromJson(data);
         print(myUser.userId);
         print(myUser.userName);
+
+        print("save");
+        myLogin.setUser(myUser);
+
+        afterUser = myLogin.getUser();
+        print(afterUser.userName);
+        print(afterUser.userId);
+        print("end");
 
         /*
         setState(() {

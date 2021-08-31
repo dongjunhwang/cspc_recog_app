@@ -5,7 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 
 import '../urls.dart';
-import 'package:cspc_recog/auth/models/loginUser.dart';
+import 'package:cspc_recog/auth/models/TokenReceiver.dart';
 
 import 'package:flutter/services.dart';
 import 'package:cspc_recog/auth/register.dart';

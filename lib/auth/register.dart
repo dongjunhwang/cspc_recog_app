@@ -1,5 +1,5 @@
 import 'package:cspc_recog/main.dart';
-import 'package:cspc_recog/auth/models/loginUser.dart';
+import 'package:cspc_recog/auth/models/TokenReceiver.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';

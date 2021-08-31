@@ -5,8 +5,20 @@ import 'package:cspc_recog/auth/models/user.dart';
 
 class MyLoginUser with ChangeNotifier {
   User myUser;
-  //List<ProfileModel> myProfileList;
+  List<ProfileModel> myProfileList;
 
+  MyLoginUser({
+    this.myUser,
+    this.myProfileList,
+  });
+
+  User getUser() => myUser;
+  List<ProfileModel> getProfileList() => myProfileList;
+
+  void setUser(User data){
+    myUser = data;
+    notifyListeners();
+  }
 
 
 
