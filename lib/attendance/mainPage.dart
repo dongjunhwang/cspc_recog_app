@@ -6,7 +6,16 @@ import 'dart:math';
 
 import '../urls.dart';
 
-//TODO : remove profile list button (바로 profile list를 볼 수 있도록 하기)
+final List<Color> profileColorList = [
+  Color(0xff86e3ce),
+  Color(0xffd0e6a5),
+  Color(0xffffdd94),
+  Color(0xfffa897b),
+  Color(0xffccabd8),
+];
+
+final fontColor = Colors.grey[600];
+
 class AttendancePage extends StatefulWidget {
   @override
   _AttendancePageState createState() => _AttendancePageState();
@@ -31,14 +40,6 @@ class _AttendancePageState extends State<AttendancePage> {
     });
   }
 
-  final List<Color> profileColorList = [
-    Color(0xff86e3ce),
-    Color(0xffd0e6a5),
-    Color(0xffffdd94),
-    Color(0xfffa897b),
-    Color(0xffccabd8),
-  ];
-
   final List<Icon> rankingIconList = [
     Icon(
       Foundation.crown,
@@ -60,11 +61,17 @@ class _AttendancePageState extends State<AttendancePage> {
       body: Container(
         decoration: BoxDecoration(
           //color: profileColorList[0],
-
           gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.center,
-              colors: [profileColorList[0], profileColorList[1]]),
+            begin: Alignment.topCenter,
+            end: Alignment.center,
+            colors: [profileColorList[0], profileColorList[1]],
+          ),
+          image: DecorationImage(
+              image: AssetImage("assets/images/4853433.jpg"),
+              fit: BoxFit.cover,
+              scale: 0.5,
+              colorFilter: ColorFilter.mode(
+                  Colors.black.withOpacity(0.4), BlendMode.dstATop)),
         ),
         child: FutureBuilder<List<ProfileModel>>(
             future: getProfileList(context),
@@ -122,6 +129,8 @@ class _AttendancePageState extends State<AttendancePage> {
         "온라인 : $cnt명",
         style: TextStyle(
           fontSize: 20,
+          color: profileColorList[1],
+          fontWeight: FontWeight.w900,
         ),
       ),
     );
@@ -131,17 +140,40 @@ class _AttendancePageState extends State<AttendancePage> {
     return Container(
       child: SizedBox(
         height: MediaQuery.of(context).size.height * 0.5,
-        child: Container(
-          alignment: Alignment.center,
-          child: Text(
-            "${myProfile.group_name}",
-            style: TextStyle(
-              fontSize: 60,
-              fontWeight: FontWeight.w700,
-              color: Colors.white,
-              letterSpacing: 8,
+        child: Column(
+          children: [
+            SizedBox(
+              height: MediaQuery.of(context).size.height * 0.1,
             ),
-          ),
+            Container(
+              padding: EdgeInsets.only(bottom: 50),
+              child: Text(
+                "${myProfile.groupName}",
+                style: TextStyle(
+                  fontSize: 60,
+                  fontWeight: FontWeight.w700,
+                  color: Colors.white,
+                  letterSpacing: 8,
+                ),
+              ),
+            ),
+            Container(
+              padding: EdgeInsets.only(right: 20),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Text(
+                    "Hi, ${myProfile.nickName}",
+                    style: TextStyle(
+                      fontSize: 30,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -161,6 +193,8 @@ class _AttendancePageState extends State<AttendancePage> {
             "고인물 랭킹",
             style: TextStyle(
               fontSize: 20,
+              color: profileColorList[0],
+              fontWeight: FontWeight.w900,
             ),
           ),
         ),
@@ -168,11 +202,12 @@ class _AttendancePageState extends State<AttendancePage> {
             padding: EdgeInsets.all(10),
             alignment: Alignment.topLeft,
             child: Card(
-              elevation: 10,
+              elevation: 0,
               color: Colors.white,
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
+                  borderRadius: BorderRadius.circular(10),
+                  side: BorderSide(
+                      color: profileColorList[0].withOpacity(0.7), width: 4)),
               child: SizedBox(
                 width: MediaQuery.of(context).size.width * 0.4,
                 child: Column(
@@ -184,7 +219,12 @@ class _AttendancePageState extends State<AttendancePage> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             rankingIconList[i],
-                            Text("${profileList[i].nickName} "),
+                            Text(
+                              "${profileList[i].nickName} ",
+                              style: TextStyle(
+                                color: fontColor,
+                              ),
+                            ),
                           ],
                         ),
                       )
@@ -203,10 +243,13 @@ class _AttendancePageState extends State<AttendancePage> {
     return Container(
       padding: EdgeInsets.all(10),
       child: Card(
-        elevation: 10,
+        elevation: 0,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(30),
-        ),
+            borderRadius: BorderRadius.circular(30),
+            side: BorderSide(
+              color: profileColorList[1],
+              width: 4,
+            )),
         child: SizedBox(
           height: MediaQuery.of(context).size.height * 0.3,
           child: GridView.count(
@@ -277,6 +320,7 @@ class _AttendancePageState extends State<AttendancePage> {
                         profile.nickName,
                         style: TextStyle(
                           fontSize: 15,
+                          color: fontColor,
                         ),
                       ),
 
