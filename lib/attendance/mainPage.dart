@@ -292,8 +292,8 @@ class _AttendancePageState extends State<AttendancePage> {
                             right: 3,
                             bottom: 3,
                             child: Container(
-                              width: 20,
-                              height: 20,
+                              width: 21,
+                              height: 21,
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
                                 color: Colors.white,
@@ -301,8 +301,8 @@ class _AttendancePageState extends State<AttendancePage> {
                             ),
                           ),
                           Positioned(
-                            right: 5,
-                            bottom: 5,
+                            right: 6,
+                            bottom: 6,
                             child: Container(
                               width: 15,
                               height: 15,
