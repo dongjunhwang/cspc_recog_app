@@ -6,6 +6,7 @@ import 'package:cspc_recog/board/screen/screen_home.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:salomon_bottom_bar/salomon_bottom_bar.dart';
 
 //Main App Run
 void main() async {
@@ -57,27 +58,32 @@ class _MyMainPageState extends State<MyMainPage> {
       appBar: AppBar(
         title: Text(_title[_currentIndex]),
         automaticallyImplyLeading: false,
+        backgroundColor: Colors.transparent,
+        elevation: 0.0,
         actions: [
           IconButton(
               icon: Icon(Icons.account_circle_rounded),
               onPressed: () => _scaffoldKey.currentState.openEndDrawer()),
         ],
       ),
+      extendBodyBehindAppBar: true,
       body: _children[_currentIndex],
-      bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
+      bottomNavigationBar: SalomonBottomBar(
+        //type: BottomNavigationBarType.fixed,
+        itemPadding: EdgeInsets.symmetric(vertical: 10, horizontal: 30),
         onTap: _onTap,
         currentIndex: _currentIndex,
         items: [
-          new BottomNavigationBarItem(
+          new SalomonBottomBarItem(
             icon: Icon(Icons.people),
             title: Text('Attendance'),
+            selectedColor: Color(0xff86e3ce),
           ),
-          new BottomNavigationBarItem(
+          new SalomonBottomBarItem(
             icon: Icon(Icons.dashboard),
             title: Text('Board'),
           ),
-          new BottomNavigationBarItem(
+          new SalomonBottomBarItem(
             icon: Icon(Icons.calendar_today),
             title: Text('Calendar'),
           )

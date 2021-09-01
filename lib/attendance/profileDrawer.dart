@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:cspc_recog/attendance/mainPage.dart';
 import 'package:cspc_recog/attendance/models/profile.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -40,6 +41,12 @@ class ProfileEditPageState extends State<ProfileDrawerPage> {
               profile = snapshot.data;
 
               return Container(
+                decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.center,
+                  colors: [profileColorList[0], profileColorList[1]],
+                )),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
