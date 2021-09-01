@@ -32,14 +32,11 @@ class _AttendancePageState extends State<AttendancePage> {
   }
 
   final List<Color> profileColorList = [
-    Colors.amber,
-    Colors.blue,
-    Colors.teal,
-    Colors.lime,
-    Colors.brown,
-    Colors.deepPurple,
-    Colors.cyan,
-    Colors.orange,
+    Color(0xff86e3ce),
+    Color(0xffd0e6a5),
+    Color(0xffffdd94),
+    Color(0xfffa897b),
+    Color(0xffccabd8),
   ];
 
   final List<Icon> rankingIconList = [
@@ -62,10 +59,12 @@ class _AttendancePageState extends State<AttendancePage> {
     return Scaffold(
       body: Container(
         decoration: BoxDecoration(
+          //color: profileColorList[0],
+
           gradient: LinearGradient(
               begin: Alignment.topCenter,
               end: Alignment.center,
-              colors: [Colors.blue, Colors.white70]),
+              colors: [profileColorList[0], profileColorList[1]]),
         ),
         child: FutureBuilder<List<ProfileModel>>(
             future: getProfileList(context),
@@ -90,9 +89,9 @@ class _AttendancePageState extends State<AttendancePage> {
                                 )),
                             child: Column(
                               children: [
-                                visitTimeRanking(profileList),
                                 profileCount(profileList),
                                 profileView(profileList),
+                                visitTimeRanking(profileList),
                               ],
                             ),
                           ),
@@ -131,7 +130,7 @@ class _AttendancePageState extends State<AttendancePage> {
   Widget groupLogo() {
     return Container(
       child: SizedBox(
-        height: MediaQuery.of(context).size.height * 0.3,
+        height: MediaQuery.of(context).size.height * 0.5,
         child: Container(
           alignment: Alignment.center,
           child: Text(
@@ -139,7 +138,7 @@ class _AttendancePageState extends State<AttendancePage> {
             style: TextStyle(
               fontSize: 60,
               fontWeight: FontWeight.w700,
-              color: Colors.blue[50],
+              color: Colors.white,
               letterSpacing: 8,
             ),
           ),
@@ -225,7 +224,9 @@ class _AttendancePageState extends State<AttendancePage> {
                         children: [
                           profile.profileImageUrl == null
                               ? Icon(
-                                  Icons.account_circle,
+                                  //FontAwesome.user_circle_o,
+                                  MaterialCommunityIcons.account,
+
                                   size: 50,
                                   color: profileColorList[Random()
                                       .nextInt(profileColorList.length)],

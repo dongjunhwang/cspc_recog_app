@@ -33,6 +33,7 @@ dependencies:
   #For Attendance
   http:
   flutter_icons: ^1.1.0
+  salomon_bottom_bar: ^3.1.0
 
   #For Board
   flutter_swiper:
