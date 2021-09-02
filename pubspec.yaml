@@ -32,7 +32,8 @@ dependencies:
 
   #For Attendance
   http:
-  provider:
+  flutter_icons: ^1.1.0
+  salomon_bottom_bar: ^3.1.0
 
   #For Board
   flutter_swiper:
@@ -55,7 +56,8 @@ dev_dependencies:
 
 # The following section is specific to Flutter.
 flutter:
-
+  assets:
+    - assets/images/
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.
