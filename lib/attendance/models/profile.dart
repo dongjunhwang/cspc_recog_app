@@ -5,27 +5,36 @@ import 'package:cspc_recog/urls.dart';
 class ProfileModel {
   final int profileId;
   final String nickName;
-  final bool isOnline;
   final DateTime lastVisitTime;
   final Duration visitTimeSum;
+  final bool isOnline;
+  final bool isAdmin;
   String profileImageUrl;
+  final int userId;
+  final int groupId;
 
   ProfileModel({
     this.profileId,
     this.nickName,
-    this.isOnline,
     this.lastVisitTime,
     this.visitTimeSum,
+    this.isOnline,
+    this.isAdmin,
     this.profileImageUrl,
+    this.userId,
+    this.groupId,
   });
   factory ProfileModel.fromJson(Map<String, dynamic> json) {
     return ProfileModel(
-      profileId: json['Profile_id'],
+      profileId: json['id'],
       nickName: json['nick_name'],
-      isOnline: json['is_online'],
       lastVisitTime: DateTime.parse(json['last_visit_time']),
       visitTimeSum: parseDuration(json['visit_time_sum']),
+      isOnline: json['is_online'],
+      isAdmin: json['is_admin'],
       profileImageUrl: json['profile_image'],
+      userId: json['user_id'],
+      groupId: json['group_id'],
     );
   }
 }

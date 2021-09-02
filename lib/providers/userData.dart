@@ -20,6 +20,10 @@ class MyLoginUser with ChangeNotifier {
     notifyListeners();
   }
 
+  void setProfileList(List<ProfileModel> data){
+    myProfileList = data;
+    notifyListeners();
+  }
 
 
 }

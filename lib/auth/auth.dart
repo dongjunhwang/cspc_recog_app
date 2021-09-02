@@ -1,3 +1,4 @@
+import 'package:cspc_recog/attendance/models/profile.dart';
 import 'package:cspc_recog/main.dart';
 import 'package:cspc_recog/providers/userData.dart';
 //import 'package:cspc_recog/auth/groupSelect.dart';
@@ -25,6 +26,8 @@ class _LoginPageState extends State<LoginPage> {
   TokenReceiver myToken;
   User myUser;
   User afterUser;
+  List<ProfileModel> myProfileList = [];
+  ProfileModel myProfile;
 
   @override
   Widget build(BuildContext context) {
@@ -118,16 +121,17 @@ class _LoginPageState extends State<LoginPage> {
 
       if (data != null) {
         myUser = User.fromJson(data);
-        print(myUser.userId);
-        print(myUser.userName);
 
-        print("save");
         myLogin.setUser(myUser);
 
+        profilelistGet(myUser.userId);
+
+        /*
         afterUser = myLogin.getUser();
         print(afterUser.userName);
         print(afterUser.userId);
         print("end");
+        */
 
         /*
         setState(() {
@@ -142,6 +146,40 @@ class _LoginPageState extends State<LoginPage> {
       });*/
     }
   }
+
+  profilelistGet(int id) async {
+    print("proflielist start");
+    //MyLoginUser myLogin = Provider.of<MyLoginUser>(context, listen: false);
+
+    final response = await http.post(
+      Uri.parse(UrlPrefix.urls + "users/auth/user/profile/"),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode({
+        "user_id": id,
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+
+      if (data != null) {
+
+        for (Map<String, dynamic> temp in data) {
+          myProfileList.add(ProfileModel.fromJson(temp));
+        }
+        print(myProfileList);
+
+        //myLogin.setProfileList(myProfileList);
+        //myLogin.setUser(myUser);
+
+      }
+    } else {
+    }
+  }
+
+
 
 
   /*
