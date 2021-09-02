@@ -35,10 +35,20 @@ class Post{
   int authorId;
   String nickName;
   String contents;
+  DateTime createdTime;
   int id;
   int like;
   bool hasImage;
-  Post({this.id,this.title,this.authorId,this.nickName,this.contents,this.like, this.hasImage});
+  Post(
+      { this.id, //post id
+        this.title,
+        this.authorId, //profile id
+        this.nickName, //profile name
+        this.contents,
+        this.createdTime,
+        this.like,
+        this.hasImage}
+      );
 
   Post.fromJson(Map<String,dynamic> json)
       : id = json['id'],
@@ -46,6 +56,7 @@ class Post{
         authorId = json['author'],
         nickName = json['nickname'],
         contents = json['contents'],
+        createdTime = DateTime.parse(json['created_date']),
         like = json['like_count'],
         hasImage = json['has_image'];
 }
@@ -56,6 +67,7 @@ Future<Post> getPost(context, postId) async{
   if(response.statusCode == 200) {
       Map<String,dynamic> postMap = jsonDecode(utf8.decode(response.bodyBytes));
       post = Post.fromJson(postMap);
+      print(post.createdTime);
   }
   else{
     throw Exception('falied!');

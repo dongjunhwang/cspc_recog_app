@@ -1,11 +1,8 @@
-import 'package:cspc_recog/board/model/api_adapter.dart';
 import 'package:flutter/material.dart';
 import 'package:cspc_recog/board/screen/screen_post_list.dart';
 import 'package:cspc_recog/board/screen/screen_new_board.dart';
 import 'package:cspc_recog/board/model/model_board.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
-import 'package:cspc_recog/urls.dart';
+
 
 class BoardPage extends StatefulWidget{
   //임시 그룹 아이디
@@ -17,23 +14,6 @@ class _HomeScreenState extends State<BoardPage>{
   List<Post> posts = [];
   List<Board> boards = [];
   bool isLoading = false;
-
-  _fetchPosts(int boardId) async{
-    setState((){
-      isLoading = true;
-    });
-    //await Future.delayed(Duration(seconds: 3)); ///로딩 테스트
-    final response = await http.get(Uri.parse(UrlPrefix.urls+'board/'+boardId.toString()));
-    if(response.statusCode == 200) {
-      setState(() {
-        posts = parsePostList(utf8.decode(response.bodyBytes));
-        isLoading = false;
-      });
-    }
-    else{
-      throw Exception('falied!');
-    }
-  }
 
   @override
   Widget build(BuildContext context){
@@ -134,7 +114,7 @@ class _HomeScreenState extends State<BoardPage>{
                   backgroundColor: MaterialStateProperty.all<Color>(Colors.deepOrange),
                 ),
                 onPressed: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
+                  /*ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
                         content:Row(
                           children: [
@@ -147,11 +127,11 @@ class _HomeScreenState extends State<BoardPage>{
                         ),
                         duration: Duration(seconds:10),
                       )
-                  );
-                  _fetchPosts(boards[i].boardId).whenComplete((){
-                    ScaffoldMessenger.of(context).removeCurrentSnackBar();
-                    return Navigator.push(context,MaterialPageRoute(builder: (context)=>ListScreen(posts:posts,boardId:boards[i].boardId)));
-                  });
+                  );*/
+                  //_fetchPosts(boards[i].boardId).whenComplete((){
+                    //ScaffoldMessenger.of(context).removeCurrentSnackBar();
+                    return Navigator.push(context,MaterialPageRoute(builder: (context)=>ListScreen(posts:posts,boardId:boards[i].boardId,boardName: boards[i].boardName,)));
+                  //});
                 },
               ),
             ),

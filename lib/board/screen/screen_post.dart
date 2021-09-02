@@ -5,13 +5,14 @@ import 'package:flutter_swiper/flutter_swiper.dart';
 import 'package:like_button/like_button.dart';
 import 'package:cspc_recog/urls.dart';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 
 import '../model/model_board.dart';
 class PostScreen extends StatefulWidget {
   Post post;
-
+  String boardName;
   int id;
-  PostScreen({this.post,this.id});
+  PostScreen({this.post,this.id,this.boardName});
 
   @override
   _PostScreenState createState() => _PostScreenState();
@@ -60,8 +61,17 @@ class _PostScreenState extends State<PostScreen> {
       right:true,
       bottom: false,
       child: Scaffold(
+        appBar: AppBar(
+          title: Text(widget.boardName),
+          actions:[
+            new IconButton(
+              icon: Icon(Icons.more_horiz),
+              onPressed: ()=>postOption(context)
+            )
+          ]
+        ),
         resizeToAvoidBottomInset: true,
-        backgroundColor: Colors.deepOrange,
+        //backgroundColor: Colors.deepOrange,
         body: Column(
           children: [
             Expanded(
@@ -73,19 +83,6 @@ class _PostScreenState extends State<PostScreen> {
                     //mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: <Widget>[
-                      Container(
-                        width : width*0.8,
-                        padding: EdgeInsets.only(top: width * 0.012),
-                        child: Text(
-                          "자세히 보기",
-                          textAlign: TextAlign.center,
-                          maxLines:2,
-                          style: TextStyle(
-                            fontSize:width*0.06,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
                       //postView(widget.post, width, height),
                       FutureBuilder(
                           future: getImages(context, widget.id),
@@ -109,6 +106,7 @@ class _PostScreenState extends State<PostScreen> {
                                   ]);
                             }
                           }),
+                      Divider(),
                       FutureBuilder(
                           future: getCommentList(context, widget.id),
                           builder: (BuildContext context, AsyncSnapshot snapshot){
@@ -158,31 +156,59 @@ class _PostScreenState extends State<PostScreen> {
         child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children:<Widget>[
+                  Container(
+                    width : width*0.7,
+                    padding: EdgeInsets.fromLTRB(width*0.024, width * 0.012, 0, 0),
+                    child: Text(
+                      post.title,
+                      textAlign: TextAlign.left,
+                      maxLines:1,
+                      style: TextStyle(
+                        fontSize:width*0.058,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),///제목
+                  Container(
+                    width:width*0.1,
+                    child:IconButton(
+                        onPressed: ()=>postOption(context),
+                        icon: Icon(Icons.more_horiz)),
+                  )
+                ],
+              ),
               Container(
                 width : width*0.8,
-                padding: EdgeInsets.only(top: width * 0.012),
-                child: Text(
-                  post.title,
-                  textAlign: TextAlign.center,
-                  maxLines:2,
-                  style: TextStyle(
-                    fontSize:width*0.058,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),///제목
-              Container(
-                width : width*0.8,
-                padding: EdgeInsets.only(top: width * 0.012),
+                padding: EdgeInsets.fromLTRB(width*0.024, width * 0.012, 0, 0),
                 child: Text(
                   '작성자:'+post.nickName,
-                  textAlign: TextAlign.center,
+                  textAlign: TextAlign.left,
                   maxLines:2,
                   style: TextStyle(
                     fontSize:width*0.040,
                   ),
                 ),
               ),///작성자
+              Container(
+                width : width*0.8,
+                padding: EdgeInsets.fromLTRB(width*0.024, width * 0.012, 0, 0),
+                child: Text(
+                  //post.createdTime.toString(),
+                  new DateFormat('yy.MM.dd kk:mm').format(post.createdTime),
+                  textAlign: TextAlign.left,
+                  maxLines:2,
+                  style: TextStyle(
+                    fontSize:width*0.040,
+                  ),
+                ),
+              ),///게시 날짜
+              Container(
+                height:height*0.012,
+                width : width*0.8,
+              ),
               Container(
                 width : width*0.8,
                 padding: EdgeInsets.all(width * 0.024),
@@ -285,6 +311,61 @@ class _PostScreenState extends State<PostScreen> {
         )
     );
   }
+
+  postOption(mContext){
+    showDialog(
+        context: mContext,
+        builder: (context) {
+          return SimpleDialog(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8.0),
+              ),
+              children: <Widget>[
+                (widget.post.authorId != profileId)
+                  ? (SimpleDialogOption(
+                  child:Text('신고하기', style:TextStyle(color: Colors.black54)),
+                  onPressed: reportPost,
+                ))
+                  :(SimpleDialogOption(
+                      child:Text('글 수정하기', style:TextStyle(color: Colors.black54)),
+                      onPressed: modifyPost,
+                  )),
+                (widget.post.authorId != profileId)
+                  ? (Container())
+                  :(SimpleDialogOption(
+                    child:Text('글 삭제하기', style:TextStyle(color: Colors.black54)),
+                    onPressed: deletePost,
+                  )) ,
+                SimpleDialogOption(
+                  child:Text('취소', style:TextStyle(color: Colors.black54)),
+                  onPressed: () => Navigator.pop(context),
+                ),
+              ]
+          );
+        });
+  }
+
+  reportPost(){
+    Navigator.pop(context);
+  }
+
+  deletePost() async{
+    Navigator.pop(context);
+    var response = await http.delete(Uri.parse(UrlPrefix.urls+'board/post/'+widget.post.id.toString()));
+
+    if(response.statusCode == 200) {
+      print("delete complete!");
+      Navigator.pop(context, true);
+    }
+    else{
+      throw Exception('falied!');
+    }
+  }
+
+  modifyPost() async{
+
+  }
+
   Future<bool> onLikeButtonTapped(bool isLiked) async{
     /// send your request here
     // final bool success= await sendRequest();
@@ -297,9 +378,13 @@ class _PostScreenState extends State<PostScreen> {
     );
     if(response.statusCode == 200) {
       final bool success = true;
+
+      print(success);
     }
     else{
       final bool success = false;
+
+      print(success);
     }
     /// if failed, you can do nothing
     // return success? !isLiked:isLiked;
@@ -359,13 +444,18 @@ class _PostScreenState extends State<PostScreen> {
   List<Widget> commentCandidates(double width, List<Comment> comments){
     List<Widget> _children = [];
     for(int i=0;i<comments.length;i++){
+      if(i!=0){
+        _children.add(
+          Divider()
+        );
+      }
       _children.add(
           Container(
-              decoration: BoxDecoration(
+              /*decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(20),
                   border: Border.all(color: Colors.deepOrangeAccent),
                   color: Colors.white
-              ),
+              ),*/
               child:  Column(
                   children:<Widget>[
                     Container(
