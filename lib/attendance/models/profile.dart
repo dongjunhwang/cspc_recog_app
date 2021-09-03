@@ -10,6 +10,8 @@ class ProfileModel {
   final Duration visitTimeSum;
   final String profileImageUrl;
   final String groupName;
+  final bool isAdmin;
+
 
   ProfileModel({
     this.profileId,
@@ -19,6 +21,7 @@ class ProfileModel {
     this.visitTimeSum,
     this.profileImageUrl,
     this.groupName,
+    this.isAdmin,
   });
   factory ProfileModel.fromJson(Map<String, dynamic> json) {
     return ProfileModel(
@@ -29,6 +32,7 @@ class ProfileModel {
       lastVisitTime: DateTime.parse(json['last_visit_time']),
       visitTimeSum: parseDuration(json['visit_time_sum']),
       profileImageUrl: json['profile_image'],
+      isAdmin: json['is_admin'],
     );
   }
 }
