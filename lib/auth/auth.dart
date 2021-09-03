@@ -27,7 +27,7 @@ class _LoginPageState extends State<LoginPage> {
   User myUser;
   User afterUser;
   List<ProfileModel> myProfileList = [];
-  ProfileModel myProfile;
+  List<ProfileModel> myProfileListAfter;
 
   @override
   Widget build(BuildContext context) {
@@ -171,13 +171,19 @@ class _LoginPageState extends State<LoginPage> {
         }
         print(myProfileList);
 
-        //myLogin.setProfileList(myProfileList);
-        //myLogin.setUser(myUser);
+        /*
+        myLogin.setProfileList(myProfileList);
 
+        myProfileListAfter = myLogin.getProfileList();
+        print(myProfileListAfter);
+        print(myProfileListAfter[0].profileId);
+        print(myProfileListAfter[1].profileId);
+        */
       }
     } else {
     }
   }
+
 
 
 

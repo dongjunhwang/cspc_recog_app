@@ -10,8 +10,6 @@ class ProfileModel {
   final bool isOnline;
   final bool isAdmin;
   String profileImageUrl;
-  final int userId;
-  final int groupId;
 
   ProfileModel({
     this.profileId,
@@ -21,8 +19,6 @@ class ProfileModel {
     this.isOnline,
     this.isAdmin,
     this.profileImageUrl,
-    this.userId,
-    this.groupId,
   });
   factory ProfileModel.fromJson(Map<String, dynamic> json) {
     return ProfileModel(
@@ -33,8 +29,6 @@ class ProfileModel {
       isOnline: json['is_online'],
       isAdmin: json['is_admin'],
       profileImageUrl: json['profile_image'],
-      userId: json['user_id'],
-      groupId: json['group_id'],
     );
   }
 }
