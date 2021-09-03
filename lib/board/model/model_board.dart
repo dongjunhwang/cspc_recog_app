@@ -1,3 +1,7 @@
+import 'package:cspc_recog/urls.dart';
+import 'package:cspc_recog/board/model/api_adapter.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 class Board{
   String boardName;
   int boardId;
@@ -7,7 +11,25 @@ class Board{
     : boardName = json['board_name'],
       boardId = json['id'];
 }
+Future<List<Board>> getBoardList(context, groupId) async {
+  List<Board> boardList = [];
+  try{
+    final response = await http.get(
+        Uri.parse(UrlPrefix.urls+'board/group/'+groupId.toString())
+    );
+    if(response.statusCode == 200) {
+        boardList = parseBoardList(utf8.decode(response.bodyBytes));
+    }
+    else{
+      throw Exception('falied get board list groupId!'+groupId.toString());
+    }
+  }
+  catch(e){
+    print(e);
+  }
 
+  return boardList;
+}
 class Post{
   String title;
   int authorId;
@@ -28,6 +50,31 @@ class Post{
         hasImage = json['has_image'];
 }
 
+Future<Post> getPost(context, postId) async{
+  Post post;
+  final response = await http.get(Uri.parse(UrlPrefix.urls+'board/post/'+postId.toString()));
+  if(response.statusCode == 200) {
+      Map<String,dynamic> postMap = jsonDecode(utf8.decode(response.bodyBytes));
+      post = Post.fromJson(postMap);
+  }
+  else{
+    throw Exception('falied!');
+  }
+  return post;
+}
+
+Future<List<Post>> getPostList(context, boardId) async{
+  List<Post> postList = [];
+  final response = await http.get(Uri.parse(UrlPrefix.urls+'board/'+boardId.toString()));
+  if(response.statusCode == 200) {
+      postList = parsePostList(utf8.decode(response.bodyBytes));
+  }
+  else{
+    throw Exception('falie to get post list boardId '+boardId.toString());
+  }
+  return postList;
+}
+
 class ImageUrl{
   String imgUrl;
 
@@ -35,6 +82,19 @@ class ImageUrl{
 
   ImageUrl.fromJson(Map<String,dynamic> json)
     : imgUrl = json['image'];
+}
+
+Future<List<ImageUrl>> getImages(context, postId) async{
+  List<ImageUrl> imageList = [];
+  final imgResponse = await http.get(
+      Uri.parse(UrlPrefix.urls + 'board/image/' + postId.toString()));
+  if(imgResponse.statusCode == 200){
+      imageList = parseImgs(utf8.decode(imgResponse.bodyBytes));
+  }
+  else{
+    throw Exception('Get image falied postId!'+postId.toString());
+  }
+  return imageList;
 }
 
 
@@ -50,4 +110,16 @@ class Comment{
         nickName = json['nickname'],
         contents = json['contents'],
         postId = json['post_id'];
+}
+
+Future<List<Comment>> getCommentList(context, postId) async{
+  List<Comment> commentList = [];
+  final commentResponse = await http.get(Uri.parse(UrlPrefix.urls+'board/comment/'+postId.toString()));
+  if(commentResponse.statusCode == 200) {
+    commentList = parseComments(utf8.decode(commentResponse.bodyBytes));
+  }
+  else{
+    throw Exception('falied get comment List post Id!'+postId.toString());
+  }
+  return commentList;
 }
