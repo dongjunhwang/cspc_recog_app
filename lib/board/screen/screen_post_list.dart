@@ -28,6 +28,7 @@ class _ListScreenState extends State<ListScreen>{
 
   @override
   Widget build(BuildContext context){
+    ScrollController listController = ScrollController();
     Size screenSize = MediaQuery.of(context).size;
     double width = screenSize.width;
     double height = screenSize.height;
@@ -54,6 +55,7 @@ class _ListScreenState extends State<ListScreen>{
                 });
               },
               child:SingleChildScrollView(
+                controller: listController,
                   physics: ScrollPhysics(),
                   scrollDirection: Axis.vertical,
                   child: Column(
@@ -101,9 +103,21 @@ class _ListScreenState extends State<ListScreen>{
                       ]
                   )
               )
-            )
+            ),
+            floatingActionButton: FloatingActionButton(
+              onPressed:(){
+                listController.animateTo(
+                   0.0,
+                   duration: const Duration(milliseconds: 300),
+                   curve: Curves.easeOut
+                );
+              },
+              child: const Icon(Icons.navigation_sharp),
+              backgroundColor: ColorList[2],
+            ),
 
-    ));
+        )
+    );
   }
   Widget buildListView(Post post, double width, double height){
     String postTime;
