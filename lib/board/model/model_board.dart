@@ -67,7 +67,6 @@ Future<Post> getPost(context, postId) async{
   if(response.statusCode == 200) {
       Map<String,dynamic> postMap = jsonDecode(utf8.decode(response.bodyBytes));
       post = Post.fromJson(postMap);
-      print(post.createdTime);
   }
   else{
     throw Exception('falied!');
@@ -114,13 +113,17 @@ class Comment{
   int authorId;
   String nickName;
   String contents;
+  DateTime createdTime;
   int postId;
-  Comment({this.authorId, this.nickName, this.contents,this.postId});
+  int id;
+  Comment({this.id,this.authorId, this.nickName, this.contents,this.createdTime,this.postId});
 
   Comment.fromJson(Map<String,dynamic> json)
-      : authorId = json['author'],
+      : id = json['id'],
+        authorId = json['author'],
         nickName = json['nickname'],
         contents = json['contents'],
+        createdTime = DateTime.parse(json['created_date']),
         postId = json['post_id'];
 }
 

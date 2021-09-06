@@ -8,6 +8,14 @@ import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 
 import '../model/model_board.dart';
+
+final List<Color> ColorList = [
+  Color(0xff86e3ce),
+  Color(0xffd0e6a5),
+  Color(0xffffdd94),
+  Color(0xfffa897b),
+  Color(0xffccabd8),
+];
 class PostScreen extends StatefulWidget {
   Post post;
   String boardName;
@@ -55,6 +63,7 @@ class _PostScreenState extends State<PostScreen> {
         .size;
     double width = screenSize.width;
     double height = screenSize.height;
+    print("4");
     return SafeArea(
       top:true,
       left:true,
@@ -63,12 +72,7 @@ class _PostScreenState extends State<PostScreen> {
       child: Scaffold(
         appBar: AppBar(
           title: Text(widget.boardName),
-          actions:[
-            new IconButton(
-              icon: Icon(Icons.more_horiz),
-              onPressed: ()=>postOption(context)
-            )
-          ]
+            backgroundColor: ColorList[3],
         ),
         resizeToAvoidBottomInset: true,
         //backgroundColor: Colors.deepOrange,
@@ -147,12 +151,14 @@ class _PostScreenState extends State<PostScreen> {
   Widget postView(Post post, double width, double height) {
     double buttonSize = 30.0;
     SwiperController _controller = SwiperController();
+    String postTime;
+    if(DateTime.now().difference(post.createdTime).inDays < 365) {
+      postTime = new DateFormat('MM/dd kk:mm').format(post.createdTime);
+    }
+    else{
+      postTime = new DateFormat('yy/MM/dd').format(post.createdTime);
+    }
     return Container(
-        decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: Colors.white),
-            color: Colors.white
-        ),
         child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
@@ -160,7 +166,7 @@ class _PostScreenState extends State<PostScreen> {
                 mainAxisSize: MainAxisSize.min,
                 children:<Widget>[
                   Container(
-                    width : width*0.7,
+                    width : width*0.8,
                     padding: EdgeInsets.fromLTRB(width*0.024, width * 0.012, 0, 0),
                     child: Text(
                       post.title,
@@ -175,13 +181,14 @@ class _PostScreenState extends State<PostScreen> {
                   Container(
                     width:width*0.1,
                     child:IconButton(
+                      color:Colors.black45,
                         onPressed: ()=>postOption(context),
                         icon: Icon(Icons.more_horiz)),
                   )
                 ],
               ),
               Container(
-                width : width*0.8,
+                width : width*0.9,
                 padding: EdgeInsets.fromLTRB(width*0.024, width * 0.012, 0, 0),
                 child: Text(
                   '작성자:'+post.nickName,
@@ -193,15 +200,15 @@ class _PostScreenState extends State<PostScreen> {
                 ),
               ),///작성자
               Container(
-                width : width*0.8,
+                width : width*0.9,
                 padding: EdgeInsets.fromLTRB(width*0.024, width * 0.012, 0, 0),
                 child: Text(
                   //post.createdTime.toString(),
-                  new DateFormat('yy.MM.dd kk:mm').format(post.createdTime),
+                  postTime,
                   textAlign: TextAlign.left,
                   maxLines:2,
                   style: TextStyle(
-                    fontSize:width*0.040,
+                    fontSize:width*0.035,
                   ),
                 ),
               ),///게시 날짜
@@ -210,7 +217,7 @@ class _PostScreenState extends State<PostScreen> {
                 width : width*0.8,
               ),
               Container(
-                width : width*0.8,
+                width : width*0.9,
                 padding: EdgeInsets.all(width * 0.024),
                 child: Text(
                   post.contents,
@@ -222,10 +229,10 @@ class _PostScreenState extends State<PostScreen> {
               ),///내용
               //(post.hasImage>1)
 
-              (images.length > 1)
+              /*(images.length > 1)
                   ? ((images.length == 1)?
               Container(
-                width: width*0.8,
+                width: width*0.9,
                 child: Image.network(UrlPrefix.urls + images[0].imgUrl.substring(1)),
               )
                   :Container(
@@ -243,9 +250,9 @@ class _PostScreenState extends State<PostScreen> {
                 ),
               ))
                   : Container(
-                  width: width*0.8,
+                  width: width*0.9,
                   height:height*0.001
-              ),
+              ),*/
               (post.hasImage)
               ? ((images.length == 1)?
                   Container(
@@ -266,11 +273,11 @@ class _PostScreenState extends State<PostScreen> {
                 ),
               ))
               : Container(
-                width: width*0.8,
+                width: width*0.9,
                 height:height*0.001
               ),///이미지*/
               Container(
-                width: width * 0.8,
+                width: width * 0.9,
                 //padding: EdgeInsets.only(left:width * 0.024),
                 child: LikeButton(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -366,6 +373,49 @@ class _PostScreenState extends State<PostScreen> {
 
   }
 
+  commentOption(mContext,Comment comment){
+    showDialog(
+        context: mContext,
+        builder: (context) {
+          return SimpleDialog(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8.0),
+              ),
+              children: <Widget>[
+                (comment.authorId != profileId)
+                    ? (SimpleDialogOption(
+                  child:Text('신고하기', style:TextStyle(color: Colors.black54)),
+                  onPressed: reportPost,
+                ))
+                    :(SimpleDialogOption(
+                  child:Text('댓글 삭제하기', style:TextStyle(color: Colors.black54)),
+                  onPressed: (){deleteComment(comment.id);},
+                )),
+                SimpleDialogOption(
+                  child:Text('취소', style:TextStyle(color: Colors.black54)),
+                  onPressed: () => Navigator.pop(context),
+                ),
+              ]
+          );
+        });
+  }
+
+  deleteComment(int id) async{
+    Navigator.pop(context);
+    var response = await http.delete(Uri.parse(UrlPrefix.urls+'board/comment/delete/'+id.toString()));
+
+    if(response.statusCode == 200) {
+      print("delete complete!");
+      setState(() {
+        comments = [];
+      });
+
+    }
+    else{
+      throw Exception('falied!');
+    }
+  }
+
   Future<bool> onLikeButtonTapped(bool isLiked) async{
     /// send your request here
     // final bool success= await sendRequest();
@@ -434,54 +484,84 @@ class _PostScreenState extends State<PostScreen> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
               Column(
-                  children:commentCandidates(width, comments)
+                  children:commentCandidates(width, height, comments)
               )
             ]
         )
     );
   }
 
-  List<Widget> commentCandidates(double width, List<Comment> comments){
+  List<Widget> commentCandidates(double width,double height, List<Comment> comments){
     List<Widget> _children = [];
+    String commentTime;
+
     for(int i=0;i<comments.length;i++){
       if(i!=0){
         _children.add(
           Divider()
         );
       }
+
+      if(DateTime.now().difference(comments[i].createdTime).inDays < 365) {
+        commentTime = new DateFormat('MM/dd kk:mm').format(comments[i].createdTime);
+      }
+      else{
+        commentTime = new DateFormat('yy/MM/dd').format(comments[i].createdTime);
+      }
       _children.add(
           Container(
-              /*decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: Colors.deepOrangeAccent),
-                  color: Colors.white
-              ),*/
               child:  Column(
                   children:<Widget>[
                     Container(
-                      width : width*0.8,
-                      padding: EdgeInsets.fromLTRB(width * 0.05, width*0.02, 0, width*0.001),
-                      child: Text(
-                        comments[i].nickName,
-                        textAlign: TextAlign.left,
-                        maxLines:2,
-                        style: TextStyle(
-                          fontSize:width*0.025,
-                        ),
+                      width: width*0.9,
+                      child:Row(
+                        children: [
+                          Container(
+                            width : width*0.8,
+                            padding: EdgeInsets.fromLTRB(width * 0.024, 0, 0, 0),
+                            child: Text(
+                              comments[i].nickName,
+                              textAlign: TextAlign.left,
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize:width*0.034,
+                              ),
+                            ),
+                          ),
+                          Container(
+                            width:width*0.1,
+                            height:height*0.03,
+                            child:IconButton(
+                                color:Colors.black45,
+                                onPressed: (){commentOption(context, comments[i]);},
+                                icon: Icon(Icons.more_horiz)),
+                          )
+                        ],
                       ),
                     ),
                     Container(
-                      width : width*0.8,
-                      padding: EdgeInsets.fromLTRB(width * 0.05, 0, 0, width*0.02),
+                      width : width*0.9,
+                      padding: EdgeInsets.fromLTRB(width * 0.024, 0, 0, width*0.02),
                       child: Text(
                         comments[i].contents,
                         textAlign: TextAlign.left,
                         style: TextStyle(
-                          fontWeight: FontWeight.bold,
+                          //fontWeight: FontWeight.bold,
                           fontSize:width*0.035,
                         ),
                       ),
-                    )
+                    ),
+                    Container(
+                        width : width*0.9,
+                        padding: EdgeInsets.fromLTRB(width * 0.024, 0, 0, width*0.001),
+                        child: Text(
+                          commentTime,
+                          textAlign: TextAlign.left,
+                          style: TextStyle(
+                            fontSize:width*0.025,
+                          ),
+                        )
+                    ),
                   ]
               )
           )
@@ -491,24 +571,27 @@ class _PostScreenState extends State<PostScreen> {
   }
 
   Widget commentFormView(double width, double height){
+    //var formController = TextEditingController();
     return Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(30),
+          color: ColorList[3].withOpacity(0.2),
+          //color: Colors.white
+        ),
       child:Row(
         children: [
           Container(
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(5),
-                  border: Border.all(color: Colors.white),
-                  color: Colors.white
-              ),
               width:width*0.8,
+              padding:EdgeInsets.fromLTRB(width*0.04, 0, 0, 0),
               child: Form(
                   key: this.formKey,
                   child: Column(children: [
                     TextFormField(
+                      //controller: formController,
                       decoration: const InputDecoration(
-                        border: OutlineInputBorder(),
-                        hintText: '내용을 입력하세요',
-                        labelText: '내용',
+                        //border: OutlineInputBorder(),
+                        border: InputBorder.none,
+                        hintText: '댓글을 입력하세요',
                       ),
                       onSaved: (val) {
                         this.content = val;
@@ -528,14 +611,14 @@ class _PostScreenState extends State<PostScreen> {
             minWidth:width*0.3,
             height:height*0.2,
             shape:RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-            child:ElevatedButton(
+            child:TextButton(
               child:Text(
                 '댓글 등록',
-                style:TextStyle(color:Colors.black,fontSize: width*0.02),
+                style:TextStyle(color:ColorList[3],
+                    fontSize: width*0.03,
+                    fontWeight: FontWeight.bold,
+                ),
 
-              ),
-              style:ButtonStyle(
-                backgroundColor: MaterialStateProperty.all<Color>(Colors.white),
               ),
               onPressed: () async{
                 if(formKey.currentState.validate()){
@@ -543,12 +626,8 @@ class _PostScreenState extends State<PostScreen> {
                   this.formKey.currentState.save();
                   _sendComment(widget.post.id).whenComplete((){
                     setState(() {
-                      Comment comment=  new Comment();
-                      comment.nickName = nickName;
-                      comment.contents = content;
-                      comment.postId = widget.post.id;
-                      comments.add(comment);
-                      this.formKey.currentState.reset();
+                      comments = [];
+                      //formController.clear();
                     });
                   });
                 }

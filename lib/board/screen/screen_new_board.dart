@@ -1,8 +1,16 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:cspc_recog/urls.dart';
+import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
-import 'package:image_picker/image_picker.dart';
+
+final List<Color> ColorList = [
+  Color(0xff86e3ce),
+  Color(0xffd0e6a5),
+  Color(0xffffdd94),
+  Color(0xfffa897b),
+  Color(0xffccabd8),
+];
 
 class NewBoardScreen extends StatefulWidget{
   int groupId;
@@ -38,32 +46,48 @@ class _NewBoardScreenState extends State<NewBoardScreen>{
     }
 
     return Scaffold(
+        appBar: AppBar(
+            title: Text(
+              "새로운 게시판",
+              style: TextStyle(color:Colors.white),
+            ),
+            backgroundColor: ColorList[3],
+        ),
         body:
         SafeArea(
-            child: Column(
+            child: Center(child:
+            Column(
                 children: [
                   Form(
                     key: this.formKey,
                     child: Column(
                       children: [
-                        TextFormField(
-                          decoration: const InputDecoration(
-                            border: OutlineInputBorder(),
-                            hintText: '게시판 이름을 입력하세요',
-                            labelText: '게시판 이름',
+                        Container(
+                          width:width*0.9,
+                          child:TextFormField(
+                            inputFormatters: [
+                              LengthLimitingTextInputFormatter(10)
+                            ],
+                            decoration: const InputDecoration(
+                              border: InputBorder.none,
+                              hintText: '(10자 이내)',
+                              labelText: '게시판 이름',
+                            ),
+                            onSaved: (val) {
+                              this.name = val;
+                            },
+                            validator: (val) {
+                              if(val.length<1){
+                                return '이름이 비어있으면 안됩니다';
+                              }
+                              if(val.length>10){
+                                return '10자 이내로 적어주세요';
+                              }
+                              return null;
+                            },
+                            //autovalidateMode: AutovalidateMode.always,
                           ),
-                          onSaved: (val) {
-                            this.name = val;
-                          },
-                          validator: (val) {
-                            if(val.length<1){
-                              return '이름은 비어있으면 안됩니다';
-                            }
-                            return null;
-                          },
-                          //autovalidateMode: AutovalidateMode.always,
-                        ), ///게시판 이름
-                        //사진
+                        ),///게시판 이름
                       ],
                     ),
                   ),
@@ -77,7 +101,8 @@ class _NewBoardScreenState extends State<NewBoardScreen>{
                         style:TextStyle(color:Colors.white),
                       ),
                       style:ButtonStyle(
-                        backgroundColor: MaterialStateProperty.all<Color>(Colors.deepOrange),
+                        minimumSize: MaterialStateProperty.all(Size(width*0.9, height*0.05)),
+                        backgroundColor: MaterialStateProperty.all<Color>(ColorList[3]),
                       ),
                       onPressed: () async{
                         if(formKey.currentState.validate()){
@@ -94,6 +119,7 @@ class _NewBoardScreenState extends State<NewBoardScreen>{
                     ),
                   ),
                 ]
+            )
             )
         )
     );

@@ -3,11 +3,13 @@ import 'package:cspc_recog/board/screen/screen_post.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:cspc_recog/urls.dart';
+import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 class NewPostScreen extends StatefulWidget{
   int board_id;
-  NewPostScreen({this.board_id});
+  String boardName;
+  NewPostScreen({this.board_id,this.boardName});
   @override
   _NewPostScreenState createState() => _NewPostScreenState();
 }
@@ -64,52 +66,83 @@ class _NewPostScreenState extends State<NewPostScreen>{
     }
 
     return Scaffold(
+        appBar: AppBar(
+          title: Text(
+            "글 작성",
+            style: TextStyle(color:Colors.white),
+          ),
+          backgroundColor: ColorList[3],
+        ),
         body:
         SafeArea(
         child: Column(
               children: [
+                Container(height:height*0.01),
                 Form(
                   key: this.formKey,
                   child: Column(
                     children: [
-                      TextFormField(
-                        decoration: const InputDecoration(
-                          border: OutlineInputBorder(),
-                          hintText: '제목을 입력하세요',
-                          labelText: '제목',
+                      Container(
+                        width: width*0.96,
+                        decoration: BoxDecoration(
+                          //color: Colors.black.withOpacity(0.7),
+                          border:Border.all(color:Colors.black54),
+                          borderRadius: BorderRadius.circular(5),
                         ),
-                        onSaved: (val) {
-                          this.title = val;
-                        },
-                        validator: (val) {
-                          if(val.length<1){
-                            return '제목은 비어있으면 안됩니다';
-                          }
-                          return null;
-                        },
-                        //autovalidateMode: AutovalidateMode.always,
-                      ), ///제목
+                        child:
+                          Container(
+                            //width: width*0.7,
+                            padding: EdgeInsets.fromLTRB(width*0.024, 0, 0, 0),
+                            child: TextFormField(
+                              inputFormatters: [
+                                LengthLimitingTextInputFormatter(30),
+                              ],
+                              decoration: const InputDecoration(
+                                border: InputBorder.none,
+                                hintText: '제목',
+                              ),
+                              onSaved: (val) {
+                                this.title = val;
+                              },
+                              validator: (val) {
+                                if(val.length<1){
+                                  return '제목은 비어있으면 안됩니다';
+                                }
+                                return null;
+                              },
+                              //autovalidateMode: AutovalidateMode.always,
+                            ), ///제목
+                          ),
+                      ),
                       Container(height: height*0.012),
                       Container(
-                        child: TextFormField(
-
-                          decoration: const InputDecoration(
-                            border: OutlineInputBorder(),
-                            labelText: '내용',
-                          ),
-                          maxLines: 10,
-                          keyboardType: TextInputType.multiline,
-                          onSaved: (val) {
-                            this.content = val;
-                          },
-                          validator: (val) {
-                            if(val.length<1){
-                              return '내용을 작성해주세요';
-                            }
-                            return null;
-                          },
-                        )
-                      ),///내용
+                        width: width*0.96,
+                        decoration: BoxDecoration(
+                          //color: Colors.black.withOpacity(0.7),
+                          border:Border.all(color:Colors.black54),
+                          borderRadius: BorderRadius.circular(5),
+                        ),
+                        child: Container(
+                            padding: EdgeInsets.fromLTRB(width*0.024, 0, 0, 0),
+                          child:TextFormField(
+                            decoration: const InputDecoration(
+                              border: InputBorder.none,
+                              hintText: '내용',
+                            ),
+                            maxLines: 10,
+                            keyboardType: TextInputType.multiline,
+                            onSaved: (val) {
+                              this.content = val;
+                            },
+                            validator: (val) {
+                              if(val.length<1){
+                                return '내용을 작성해주세요';
+                              }
+                              return null;
+                            },
+                          )///내용
+                        ),
+                      ),
                       Container(
                         child: ButtonTheme(
                           minWidth:width*0.5,
@@ -121,7 +154,8 @@ class _NewPostScreenState extends State<NewPostScreen>{
                               style:TextStyle(color:Colors.white),
                             ),
                             style:ButtonStyle(
-                              backgroundColor: MaterialStateProperty.all<Color>(Colors.deepOrange),
+                              minimumSize: MaterialStateProperty.all(Size(width*0.9, height*0.05)),
+                              backgroundColor: MaterialStateProperty.all<Color>(ColorList[3]),
                             ),
                             onPressed: () => takeImage(context)
                           ),
@@ -140,14 +174,17 @@ class _NewPostScreenState extends State<NewPostScreen>{
                       style:TextStyle(color:Colors.white),
                     ),
                     style:ButtonStyle(
-                      backgroundColor: MaterialStateProperty.all<Color>(Colors.deepOrange),
+                      minimumSize: MaterialStateProperty.all(Size(width*0.9, height*0.05)),
+                      backgroundColor: MaterialStateProperty.all<Color>(ColorList[3]),
                     ),
                     onPressed: () async {
                       if (formKey.currentState.validate()) {
                         print('form 완료');
                         this.formKey.currentState.save();
                         var postId = await _sendPost(widget.board_id);
+                        print("1");
                         createdPost = await getPost(context, postId);
+                        print("2");
                         return Navigator.pushReplacement(
                                   context,
                                   MaterialPageRoute(
@@ -155,6 +192,7 @@ class _NewPostScreenState extends State<NewPostScreen>{
                                           PostScreen(
                                               post: createdPost,
                                               id: postId,
+                                            boardName: widget.boardName,
                                              )));
                       }
                       else {
