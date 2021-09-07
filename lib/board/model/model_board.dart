@@ -35,10 +35,20 @@ class Post{
   int authorId;
   String nickName;
   String contents;
+  DateTime createdTime;
   int id;
   int like;
   bool hasImage;
-  Post({this.id,this.title,this.authorId,this.nickName,this.contents,this.like, this.hasImage});
+  Post(
+      { this.id, //post id
+        this.title,
+        this.authorId, //profile id
+        this.nickName, //profile name
+        this.contents,
+        this.createdTime,
+        this.like,
+        this.hasImage}
+      );
 
   Post.fromJson(Map<String,dynamic> json)
       : id = json['id'],
@@ -46,6 +56,7 @@ class Post{
         authorId = json['author'],
         nickName = json['nickname'],
         contents = json['contents'],
+        createdTime = DateTime.parse(json['created_date']),
         like = json['like_count'],
         hasImage = json['has_image'];
 }
@@ -63,14 +74,22 @@ Future<Post> getPost(context, postId) async{
   return post;
 }
 
-Future<List<Post>> getPostList(context, boardId) async{
+Future<List<Post>> getPostList(context,boardId, page) async{
   List<Post> postList = [];
-  final response = await http.get(Uri.parse(UrlPrefix.urls+'board/'+boardId.toString()));
+  Map<String,String> queryParameters = {
+    'page': page.toString(),
+  };
+  print("page"+page.toString());
+
+  Uri uri = Uri.parse(UrlPrefix.urls+'board/'+boardId.toString());
+  final finalUri = uri.replace(queryParameters: queryParameters);
+  final response = await http.get(finalUri);
   if(response.statusCode == 200) {
       postList = parsePostList(utf8.decode(response.bodyBytes));
+      print("hehe!" + postList.length.toString());
   }
   else{
-    throw Exception('falie to get post list boardId '+boardId.toString());
+    postList = [];
   }
   return postList;
 }
@@ -102,13 +121,17 @@ class Comment{
   int authorId;
   String nickName;
   String contents;
+  DateTime createdTime;
   int postId;
-  Comment({this.authorId, this.nickName, this.contents,this.postId});
+  int id;
+  Comment({this.id,this.authorId, this.nickName, this.contents,this.createdTime,this.postId});
 
   Comment.fromJson(Map<String,dynamic> json)
-      : authorId = json['author'],
+      : id = json['id'],
+        authorId = json['author'],
         nickName = json['nickname'],
         contents = json['contents'],
+        createdTime = DateTime.parse(json['created_date']),
         postId = json['post_id'];
 }
 
