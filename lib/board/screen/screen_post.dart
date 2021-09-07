@@ -1,4 +1,5 @@
 import 'package:cspc_recog/board/model/model_board.dart';
+import 'package:cspc_recog/board/screen/screen_edit_post.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
@@ -19,8 +20,9 @@ final List<Color> ColorList = [
 class PostScreen extends StatefulWidget {
   Post post;
   String boardName;
+  int boardId;
   int id;
-  PostScreen({this.post,this.id,this.boardName});
+  PostScreen({this.post,this.id,this.boardName,this.boardId});
 
   @override
   _PostScreenState createState() => _PostScreenState();
@@ -335,7 +337,7 @@ class _PostScreenState extends State<PostScreen> {
                 ))
                   :(SimpleDialogOption(
                       child:Text('글 수정하기', style:TextStyle(color: Colors.black54)),
-                      onPressed: modifyPost,
+                      onPressed: editPost,
                   )),
                 (widget.post.authorId != profileId)
                   ? (Container())
@@ -369,8 +371,17 @@ class _PostScreenState extends State<PostScreen> {
     }
   }
 
-  modifyPost() async{
-
+  editPost() async{
+    Post tmp;
+    Navigator.pop(context);
+    tmp = await Navigator.push(
+        context, MaterialPageRoute(builder: (context) =>
+        EditPostScreen(boardId:widget.boardId,boardName: widget.boardName,post:widget.post)));
+    if(tmp != null) {
+      setState(() {
+        widget.post = tmp;
+      });
+    }
   }
 
   commentOption(mContext,Comment comment){

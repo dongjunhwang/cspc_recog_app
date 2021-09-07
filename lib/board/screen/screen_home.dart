@@ -34,7 +34,7 @@ class _HomeScreenState extends State<BoardPage>{
             //color: profileColorList[0],
             gradient: LinearGradient(
               begin: Alignment.topCenter,
-              end: Alignment.center,
+              end: Alignment.bottomCenter,
               colors: [ColorList[2], ColorList[3]],
             ),
           ),
@@ -179,7 +179,7 @@ class _HomeScreenState extends State<BoardPage>{
                   );*/
                   //_fetchPosts(boards[i].boardId).whenComplete((){
                     //ScaffoldMessenger.of(context).removeCurrentSnackBar();
-                    return Navigator.push(context,MaterialPageRoute(builder: (context)=>ListScreen(posts:posts,boardId:boards[i].boardId,boardName: boards[i].boardName,)));
+                    return Navigator.push(context,MaterialPageRoute(builder: (context)=>ListScreen(boardId:boards[i].boardId,boardName: boards[i].boardName,)));
                   //});
                 },
               ),

@@ -74,14 +74,22 @@ Future<Post> getPost(context, postId) async{
   return post;
 }
 
-Future<List<Post>> getPostList(context, boardId) async{
+Future<List<Post>> getPostList(context,boardId, page) async{
   List<Post> postList = [];
-  final response = await http.get(Uri.parse(UrlPrefix.urls+'board/'+boardId.toString()));
+  Map<String,String> queryParameters = {
+    'page': page.toString(),
+  };
+  print("page"+page.toString());
+
+  Uri uri = Uri.parse(UrlPrefix.urls+'board/'+boardId.toString());
+  final finalUri = uri.replace(queryParameters: queryParameters);
+  final response = await http.get(finalUri);
   if(response.statusCode == 200) {
       postList = parsePostList(utf8.decode(response.bodyBytes));
+      print("hehe!" + postList.length.toString());
   }
   else{
-    throw Exception('falie to get post list boardId '+boardId.toString());
+    postList = [];
   }
   return postList;
 }

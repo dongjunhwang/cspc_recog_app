@@ -1,9 +1,15 @@
+import 'dart:convert';
+
+import 'package:cspc_recog/board/model/api_adapter.dart';
 import 'package:cspc_recog/board/model/model_board.dart';
 import 'package:cspc_recog/board/screen/screen_post.dart';
 import 'package:cspc_recog/board/screen/screen_new_post.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+
+import 'package:http/http.dart' as http;
+import '../../urls.dart';
 final List<Color> ColorList = [
   Color(0xff86e3ce),
   Color(0xffd0e6a5),
@@ -12,10 +18,9 @@ final List<Color> ColorList = [
   Color(0xffccabd8),
 ];
 class ListScreen extends StatefulWidget{
-  List<Post> posts;
   int boardId;
   String boardName;
-  ListScreen({this.posts,this.boardId,this.boardName});
+  ListScreen({this.boardId,this.boardName});
 
   @override
   _ListScreenState createState() => _ListScreenState();
@@ -23,12 +28,48 @@ class ListScreen extends StatefulWidget{
 
 class _ListScreenState extends State<ListScreen>{
   bool isLoading = false;
+
+  List<Post> posts = [];
   List<Comment> comments = [];
   List<ImageUrl> images = [];
 
+  ScrollController listController;
+  int curPage = 1;
+
+  bool loading = false;
+  bool hasNext = true;
+  @override
+  void initState(){
+    super.initState();
+    listController = new ScrollController()..addListener(scrollListener);
+  }
+
+
+  Future<List<Post>> getPostList(context,boardId, page) async{
+    List<Post> postList = [];
+    Map<String,String> queryParameters = {
+      'page': page.toString(),
+    };
+    print("page"+page.toString());
+
+    Uri uri = Uri.parse(UrlPrefix.urls+'board/'+boardId.toString());
+    final finalUri = uri.replace(queryParameters: queryParameters);
+    final response = await http.get(finalUri);
+    if(response.statusCode == 200) {
+      postList = parsePostList(utf8.decode(response.bodyBytes));
+      print("hehe!" + postList.length.toString());
+    }
+    else if(response.statusCode == 202){
+      postList = parsePostList(utf8.decode(response.bodyBytes));
+      hasNext = false;
+
+      print("last!" + postList.length.toString());
+    }
+    return postList;
+  }
+
   @override
   Widget build(BuildContext context){
-    ScrollController listController = ScrollController();
     Size screenSize = MediaQuery.of(context).size;
     double width = screenSize.width;
     double height = screenSize.height;
@@ -51,7 +92,8 @@ class _ListScreenState extends State<ListScreen>{
             body: RefreshIndicator(
               onRefresh: () async{
                 setState(() {
-
+                  curPage = 1;
+                  posts = [];
                 });
               },
               child:SingleChildScrollView(
@@ -61,43 +103,63 @@ class _ListScreenState extends State<ListScreen>{
                   child: Column(
                       children:<Widget>[
                         FutureBuilder(
-                            future: getPostList(context,widget.boardId),
+                            future: getPostList(context,widget.boardId,curPage),
                             builder: (BuildContext context, AsyncSnapshot snapshot){
-                              if (snapshot.hasData == false) {
-                                return CircularProgressIndicator();
-                              } else if (snapshot.hasError) {
-                                return Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Text(
-                                    'Error: ${snapshot.error}',
-                                    style: TextStyle(fontSize: 15),
-                                  ),
-                                );
-                              } else {
-                                widget.posts = snapshot.data;  // 이거!!!! ㅠㅠ
-                                return Column(
-                                    crossAxisAlignment: CrossAxisAlignment.center,
-                                    children: <Widget>[
-                                      ListView.separated(
-                                        physics: NeverScrollableScrollPhysics(),
-                                        shrinkWrap: true,
-                                        itemCount: widget.posts.length,
-                                        itemBuilder: (BuildContext context, int index){
-                                          return Column(
-                                            children: [
-                                              buildListView(widget.posts[index],width,height),
-                                              Container(height:height*0.01),
-                                            ],
-                                          );
-                                        },
-                                        separatorBuilder: (context, index) {
-                                          //if (index == 0) return SizedBox.shrink();
-                                          return const Divider();
-                                        },
+                              switch (snapshot.connectionState){
+                                case ConnectionState.none:
+                                case ConnectionState.waiting:
+                                case ConnectionState.active:
+                                  return CircularProgressIndicator();
+                                case ConnectionState.done:
+                                  if (snapshot.hasError) {
+                                    return Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Text(
+                                        'Error: ${snapshot.error}',
+                                        style: TextStyle(fontSize: 15),
                                       ),
-                                    ]
-                                );
+                                    );
+                                  } else {
+                                    print("wowo"+posts.length.toString());
+                                    print("sn"+snapshot.data.length.toString());
+
+                                    posts..addAll(snapshot.data);
+                                    print("end"+posts.length.toString());
+                                    print("------");
+                                    if(snapshot.data.length == 0)
+                                      hasNext = false;
+                                    //posts = snapshot.data;
+                                    loading = true;// 이거!!!! ㅠㅠ
+                                    return Column(
+                                        crossAxisAlignment: CrossAxisAlignment.center,
+                                        children: <Widget>[
+                                          ListView.separated(
+                                            physics: NeverScrollableScrollPhysics(),
+                                            shrinkWrap: true,
+                                            itemCount: posts.length,
+                                            itemBuilder: (BuildContext context, int index){
+                                              return Column(
+                                                children: [
+                                                  buildListView(posts[index],width,height),
+                                                  Container(height:height*0.01),
+                                                ],
+                                              );
+                                            },
+                                            separatorBuilder: (context, index) {
+                                              //if (index == 0) return SizedBox.shrink();
+                                              return const Divider();
+                                            },
+                                          ),
+                                        ]
+                                    );
+                                  }
+                                  break;
+
+                                default:
+                                  return CircularProgressIndicator();
+
                               }
+
                             }
                         ),
                       ]
@@ -119,6 +181,21 @@ class _ListScreenState extends State<ListScreen>{
         )
     );
   }
+
+  void scrollListener(){
+    //print(listController.offset);
+    //if(listController.position.extentAfter < 300 && hasNext){
+    //if(listController.offset >= listController.position.maxScrollExtent && !listController.position.outOfRange && hasNext){
+    if(listController.position.pixels == listController.position.maxScrollExtent && hasNext){
+      //print(curPage);
+      loading = false;
+      setState(() {
+        curPage += 1;
+      });
+    }
+
+  }
+
   Widget buildListView(Post post, double width, double height){
     String postTime;
     if(DateTime.now().difference(post.createdTime).inMinutes < 60){
@@ -225,10 +302,10 @@ class _ListScreenState extends State<ListScreen>{
          async {
           final del = await Navigator.push(
           context, MaterialPageRoute(builder: (context) =>
-          PostScreen(post: post,id:post.id,boardName: widget.boardName,)));
+          PostScreen(post: post,id:post.id,boardName: widget.boardName,boardId: widget.boardId,)));
           if(del != null){
             setState(() {
-              widget.posts = [];
+              posts = [];
             });
           }
         }
