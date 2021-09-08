@@ -15,12 +15,12 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   // Obtain a list of the available cameras on the device.
   runApp(
-      MultiProvider(
-          providers: [
-            ChangeNotifierProvider(create: (_) => MyLoginUser()),
-          ],
-        child: MainApp(),
-      ),
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => MyLoginUser()),
+      ],
+      child: MainApp(),
+    ),
   );
 }
 
@@ -65,7 +65,7 @@ class _MyMainPageState extends State<MyMainPage> {
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
-        title: Text(_title[_currentIndex]),
+        title: _currentIndex != 2 ? Text(_title[_currentIndex]) : Text(''),
         automaticallyImplyLeading: false,
         backgroundColor: Colors.transparent,
         elevation: 0.0,
@@ -95,6 +95,7 @@ class _MyMainPageState extends State<MyMainPage> {
           new SalomonBottomBarItem(
             icon: Icon(Icons.calendar_today),
             title: Text('Calendar'),
+            selectedColor: Color(0xfffa897b),
           )
         ],
       ),
