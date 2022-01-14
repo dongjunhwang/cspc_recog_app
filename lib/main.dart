@@ -3,16 +3,25 @@ import 'package:cspc_recog/auth/auth.dart';
 import 'package:cspc_recog/calendar/calendar.dart';
 import 'package:cspc_recog/attendance/mainPage.dart';
 import 'package:cspc_recog/board/screen/screen_home.dart';
+import 'package:cspc_recog/providers/userData.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:salomon_bottom_bar/salomon_bottom_bar.dart';
+import 'package:provider/provider.dart';
 
 //Main App Run
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   // Obtain a list of the available cameras on the device.
-  runApp(MainApp());
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => MyLoginUser()),
+      ],
+      child: MainApp(),
+    ),
+  );
 }
 
 class MainApp extends StatelessWidget {
@@ -56,7 +65,7 @@ class _MyMainPageState extends State<MyMainPage> {
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
-        title: Text(_title[_currentIndex]),
+        title: _currentIndex != 2 ? Text(_title[_currentIndex]) : Text(''),
         automaticallyImplyLeading: false,
         backgroundColor: Colors.transparent,
         elevation: 0.0,
@@ -86,6 +95,7 @@ class _MyMainPageState extends State<MyMainPage> {
           new SalomonBottomBarItem(
             icon: Icon(Icons.calendar_today),
             title: Text('Calendar'),
+            selectedColor: Color(0xfffa897b),
           )
         ],
       ),

@@ -1,10 +1,6 @@
-import 'package:cspc_recog/attendance/models/profile.dart';
 import 'package:cspc_recog/main.dart';
-import 'package:cspc_recog/providers/userData.dart';
-//import 'package:cspc_recog/auth/groupSelect.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 
@@ -16,18 +12,15 @@ import 'package:cspc_recog/auth/register.dart';
 
 import 'models/user.dart';
 
-class LoginPage extends StatefulWidget {
+class GroupSelectPage extends StatefulWidget {
   @override
-  State<StatefulWidget> createState() => new _LoginPageState();
+  State<StatefulWidget> createState() => new _GroupSelectPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _GroupSelectPageState extends State<GroupSelectPage> {
   bool _isLoading = false;
-  TokenReceiver myToken;
+  TokenReceiver myLogin;
   User myUser;
-  User afterUser;
-  List<ProfileModel> myProfileList = [];
-  List<ProfileModel> myProfileListAfter;
 
   @override
   Widget build(BuildContext context) {
@@ -37,7 +30,7 @@ class _LoginPageState extends State<LoginPage> {
       body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
-              colors: [Colors.blue, Colors.white70],
+              colors: [Colors.white70],
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter),
         ),
@@ -54,17 +47,14 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  signIn(String id, pass) async {
-    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
-
+  getUserGroup(String id) async {
     final response = await http.post(
-      Uri.parse(UrlPrefix.urls + "users/auth/login/"),
+      Uri.parse(UrlPrefix.urls + "users/auth/user/group/"),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
       body: jsonEncode({
-        "username": id,
-        "password": pass,
+        "user_id": id,
       }),
     );
 
@@ -75,20 +65,7 @@ class _LoginPageState extends State<LoginPage> {
         setState(() {
           _isLoading = false;
         });
-        myToken = TokenReceiver.fromJson(data);
-
-        userGet(myToken.token);
-
-        /*
-        print(myUser.userId);
-        print(myUser.userName);
-        */
-
-
-        //logOut(myLogin.token);
-
-        sharedPreferences.setString("token", myToken.token);
-        //print(sharedPreferences.getString("token"));
+        myLogin = TokenReceiver.fromJson(data);
 
 
         Navigator.of(context).pushAndRemoveUntil(
@@ -96,7 +73,6 @@ class _LoginPageState extends State<LoginPage> {
                 (Route<dynamic> route) => false);
       }
     } else {
-      print("login false");
       setState(() {
         _isLoading = false;
       });
@@ -105,9 +81,6 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   userGet(String token) async {
-    print("userget start");
-    MyLoginUser myLogin = Provider.of<MyLoginUser>(context, listen: false);
-
     String knoxToken = 'Token '+ token;
     final response = await http.get(
       Uri.parse(UrlPrefix.urls + "users/auth/user/"),
@@ -122,95 +95,11 @@ class _LoginPageState extends State<LoginPage> {
       if (data != null) {
         myUser = User.fromJson(data);
 
-        myLogin.setUser(myUser);
-
-        profilelistGet(myUser.userId);
-
-        /*
-        afterUser = myLogin.getUser();
-        print(afterUser.userName);
-        print(afterUser.userId);
-        print("end");
-        */
-
-        /*
-        setState(() {
-          _isLoading = false;
-        });*/
-
+        return myUser;
       }
-    } else {
-      /*
-      setState(() {
-        _isLoading = false;
-      });*/
     }
   }
 
-  profilelistGet(int id) async {
-    print("proflielist start");
-    //MyLoginUser myLogin = Provider.of<MyLoginUser>(context, listen: false);
-
-    final response = await http.post(
-      Uri.parse(UrlPrefix.urls + "users/auth/user/profile/"),
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
-      body: jsonEncode({
-        "user_id": id,
-      }),
-    );
-
-    if (response.statusCode == 200) {
-      final data = json.decode(response.body);
-
-      if (data != null) {
-
-        for (Map<String, dynamic> temp in data) {
-          myProfileList.add(ProfileModel.fromJson(temp));
-        }
-        print(myProfileList);
-
-        /*
-        myLogin.setProfileList(myProfileList);
-
-        myProfileListAfter = myLogin.getProfileList();
-        print(myProfileListAfter);
-        print(myProfileListAfter[0].profileId);
-        print(myProfileListAfter[1].profileId);
-        */
-      }
-    } else {
-    }
-  }
-
-
-
-
-
-  /*
-    토큰 넣어주면 해당 토큰 사라짐
-
-   */
-  logOut(String token) async {
-    String knoxToken = 'Token '+ token;
-
-    final response = await http.post(
-      Uri.parse(UrlPrefix.urls + "users/auth/logout/"),
-      headers: <String, String>{
-        'Authorization': knoxToken,
-      },
-    );
-
-    print("logout");
-    print(response.statusCode);
-
-    if (response.statusCode == 204) {
-      print("logout!");
-    } else {
-      print("logout false");
-    }
-  }
 
   Container buttonSection() {
     return Container(
@@ -237,7 +126,7 @@ class _LoginPageState extends State<LoginPage> {
             setState(() {
               _isLoading = true;
             });
-            signIn(idController.text, passwordController.text);
+            //signIn(idController.text, passwordController.text);
           },
         ),
 
@@ -311,9 +200,9 @@ class _LoginPageState extends State<LoginPage> {
     return Container(
       margin: EdgeInsets.only(top: 50.0),
       padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 30.0),
-      child: Text("Login",
+      child: Text("GroupSection",
           style: TextStyle(
-              color: Colors.white70,
+              color: Colors.indigo,
               fontSize: 40.0,
               fontWeight: FontWeight.bold)),
     );

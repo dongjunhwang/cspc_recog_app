@@ -6,19 +6,20 @@ import 'package:cspc_recog/urls.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
-class NewPostScreen extends StatefulWidget{
-  int board_id;
+class EditPostScreen extends StatefulWidget{
+  Post post;
+  int boardId;
   String boardName;
-  NewPostScreen({this.board_id,this.boardName});
+  EditPostScreen({this.post,this.boardId,this.boardName});
   @override
-  _NewPostScreenState createState() => _NewPostScreenState();
+  _EditPostScreenState createState() => _EditPostScreenState();
 }
 
-class _NewPostScreenState extends State<NewPostScreen>{
+class _EditPostScreenState extends State<EditPostScreen>{
   final formKey = GlobalKey<FormState>();
-  Post createdPost;
+  Post editedPost;
   String title='';
-  int profile_id = 1; //임시 프로필 아이디
+  int profileId = 1; //임시 프로필 아이디
   String name='';
   String content = '';
 
@@ -35,12 +36,12 @@ class _NewPostScreenState extends State<NewPostScreen>{
     double width = screenSize.width;
     double height = screenSize.height;
 
-    _sendPost(int pk) async{
-      var request = http.MultipartRequest('POST',Uri.parse(UrlPrefix.urls+'board/'+pk.toString()));
+    _editPost() async{
+      var request = http.MultipartRequest('PUT',Uri.parse(UrlPrefix.urls+'board/post/'+widget.post.id.toString()));
       request.fields['title'] = title;
-      request.fields['author'] = profile_id.toString();
+      request.fields['author'] = profileId.toString();
       request.fields['contents']= content;
-      request.fields['board_id'] = pk.toString();
+      request.fields['board_id'] = widget.boardId.toString();
       await Future.forEach(
         files,
           (file) async =>{
@@ -49,16 +50,14 @@ class _NewPostScreenState extends State<NewPostScreen>{
             'image',
             (http.ByteStream(file.openRead())).cast(),
             await file.length(),
-            filename:pk.toString()+'.jpg'
+            filename:widget.boardId.toString()+'.jpg'
             ),
             ),
           }
       );
       final response = await request.send();
-      if(response.statusCode == 201) {
-        //작성된 글 pk 받아오기
-        final postId = await response.stream.bytesToString();
-        return int.parse(postId);
+      if(response.statusCode == 200) {
+        return;
       }
       else{
         throw Exception('falied!');
@@ -68,7 +67,7 @@ class _NewPostScreenState extends State<NewPostScreen>{
     return Scaffold(
         appBar: AppBar(
           title: Text(
-            "글 작성",
+            "글 수정",
             style: TextStyle(color:Colors.white),
           ),
           backgroundColor: ColorList[3],
@@ -94,6 +93,7 @@ class _NewPostScreenState extends State<NewPostScreen>{
                             //width: width*0.7,
                             padding: EdgeInsets.fromLTRB(width*0.024, 0, 0, 0),
                             child: TextFormField(
+                              initialValue: widget.post.title,
                               inputFormatters: [
                                 LengthLimitingTextInputFormatter(30),
                               ],
@@ -125,6 +125,7 @@ class _NewPostScreenState extends State<NewPostScreen>{
                         child: Container(
                             padding: EdgeInsets.fromLTRB(width*0.024, 0, 0, 0),
                           child:TextFormField(
+                            initialValue: widget.post.contents,
                             decoration: const InputDecoration(
                               border: InputBorder.none,
                               hintText: '내용',
@@ -181,19 +182,10 @@ class _NewPostScreenState extends State<NewPostScreen>{
                       if (formKey.currentState.validate()) {
                         print('form 완료');
                         this.formKey.currentState.save();
-                        var postId = await _sendPost(widget.board_id);
+                        await _editPost();
                         print("1");
-                        createdPost = await getPost(context, postId);
-                        print("2");
-                        return Navigator.pushReplacement(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) =>
-                                          PostScreen(
-                                              post: createdPost,
-                                              id: postId,
-                                            boardName: widget.boardName,
-                                             )));
+                        editedPost = await getPost(context, widget.post.id);
+                        Navigator.pop(context,editedPost);
                       }
                       else {
                         print('nono 안됨');
