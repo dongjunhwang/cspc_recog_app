@@ -65,6 +65,7 @@ class _NewPostScreenState extends State<NewPostScreen> {
     }
 
     return Scaffold(
+        resizeToAvoidBottomInset: false,
         appBar: AppBar(
           title: Text(
             "글 작성",

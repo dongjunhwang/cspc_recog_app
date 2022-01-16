@@ -67,6 +67,7 @@ class _EditPostScreenState extends State<EditPostScreen> {
     }
 
     return Scaffold(
+        resizeToAvoidBottomInset: false,
         appBar: AppBar(
           title: Text(
             "글 수정",
