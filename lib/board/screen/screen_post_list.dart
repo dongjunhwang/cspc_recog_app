@@ -208,105 +208,105 @@ class _ListScreenState extends State<ListScreen> {
     }
 
     return GestureDetector(
-        child: Container(
-          decoration: BoxDecoration(
-              //borderRadius: BorderRadius.circular(30),
-              //border: Border.all(color:Colors.white38),
-              //color: Colors.grey.shade200
+      child: Container(
+        decoration: BoxDecoration(
+            //borderRadius: BorderRadius.circular(30),
+            //border: Border.all(color:Colors.white38),
+            //color: Colors.grey.shade200
+            ),
+        height: height * 0.14,
+        //width: width*0.9,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+            Container(height: height * 0.005),
+            Row(children: <Widget>[
+              Container(width: width * 0.03),
+              Container(
+                width: width * 0.5,
+                padding: EdgeInsets.only(top: width * 0.012),
+                child: Text(
+                  post.title,
+                  textAlign: TextAlign.left,
+                  maxLines: 1,
+                  style: TextStyle(
+                    fontSize: width * 0.05,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
               ),
-          height: height * 0.14,
-          //width: width*0.9,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: <Widget>[
-              Container(height: height * 0.005),
-              Row(children: <Widget>[
-                Container(width: width * 0.03),
-                Container(
-                  width: width * 0.5,
-                  padding: EdgeInsets.only(top: width * 0.012),
+              Expanded(child: Container()),
+              Container(
                   child: Text(
-                    post.title,
+                postTime,
+                style: TextStyle(
+                  fontSize: width * 0.04,
+                ),
+              )),
+              Container(width: width * 0.02),
+            ]),
+            Container(
+              width: width * 0.9,
+              height: height * 0.04,
+              padding: EdgeInsets.only(top: width * 0.012),
+              child: Text(
+                post.contents,
+                textAlign: TextAlign.left,
+                maxLines: 1,
+                style: TextStyle(
+                  fontSize: width * 0.04,
+                ),
+              ),
+            ),
+            Expanded(child: Container()),
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Container(width: width * 0.02),
+                Container(
+                  padding: EdgeInsets.all(width * 0.012),
+                  child: Text(
+                    '작성자:' + post.nickName,
                     textAlign: TextAlign.left,
                     maxLines: 1,
                     style: TextStyle(
-                      fontSize: width * 0.05,
-                      fontWeight: FontWeight.bold,
+                      fontSize: width * 0.03,
                     ),
                   ),
                 ),
                 Expanded(child: Container()),
                 Container(
-                    child: Text(
-                  postTime,
-                  style: TextStyle(
-                    fontSize: width * 0.04,
-                  ),
-                )),
-                Container(width: width * 0.02),
-              ]),
-              Container(
-                width: width * 0.9,
-                height: height * 0.04,
-                padding: EdgeInsets.only(top: width * 0.012),
-                child: Text(
-                  post.contents,
-                  textAlign: TextAlign.left,
-                  maxLines: 1,
-                  style: TextStyle(
-                    fontSize: width * 0.04,
+                  padding: EdgeInsets.all(width * 0.012),
+                  child: Text(
+                    '좋아요:' + post.like.toString(),
+                    textAlign: TextAlign.center,
+                    maxLines: 1,
+                    style: TextStyle(
+                      fontSize: width * 0.03,
+                    ),
                   ),
                 ),
-              ),
-              Expanded(child: Container()),
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  Container(width: width * 0.02),
-                  Container(
-                    padding: EdgeInsets.all(width * 0.012),
-                    child: Text(
-                      '작성자:' + post.nickName,
-                      textAlign: TextAlign.left,
-                      maxLines: 1,
-                      style: TextStyle(
-                        fontSize: width * 0.03,
-                      ),
-                    ),
-                  ),
-                  Expanded(child: Container()),
-                  Container(
-                    padding: EdgeInsets.all(width * 0.012),
-                    child: Text(
-                      '좋아요:' + post.like.toString(),
-                      textAlign: TextAlign.center,
-                      maxLines: 1,
-                      style: TextStyle(
-                        fontSize: width * 0.03,
-                      ),
-                    ),
-                  ),
-                  Container(width: width * 0.02),
-                ],
-              ),
-            ],
-          ),
+                Container(width: width * 0.02),
+              ],
+            ),
+          ],
         ),
-        onTap: () async {
-          final del = await Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => PostScreen(
-                        post: post,
-                        id: post.id,
-                        boardName: widget.boardName,
-                        boardId: widget.boardId,
-                      )));
-          if (del != null) {
-            setState(() {
-              posts = [];
-            });
-          }
+      ),
+      onTap: () async {
+        return await Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => PostScreen(
+                      post: post,
+                      id: post.id,
+                      boardName: widget.boardName,
+                      boardId: widget.boardId,
+                    ))).then((e) {
+          setState(() {
+            posts = [];
+          });
         });
+      }, // 게시글 목록으로 돌아올 때 posts 다시 받아오기
+    );
   }
 }
