@@ -102,69 +102,71 @@ class _ListScreenState extends State<ListScreen> {
               posts = [];
             });
           },
-          child: SingleChildScrollView(
-              controller: listController,
-              physics: ScrollPhysics(),
-              scrollDirection: Axis.vertical,
-              child: Column(children: <Widget>[
-                FutureBuilder(
-                    future: getPostList(context, widget.boardId, curPage),
-                    builder: (BuildContext context, AsyncSnapshot snapshot) {
-                      switch (snapshot.connectionState) {
-                        case ConnectionState.none:
-                        case ConnectionState.waiting:
-                        case ConnectionState.active:
-                          return CircularProgressIndicator();
-                        case ConnectionState.done:
-                          if (snapshot.hasError) {
-                            return Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Text(
-                                'Error: ${snapshot.error}',
-                                style: TextStyle(fontSize: 15),
-                              ),
-                            );
-                          } else {
-                            print("wowo" + posts.length.toString());
-                            print("sn" + snapshot.data.length.toString());
+          child: Scrollbar(
+            child: SingleChildScrollView(
+                controller: listController,
+                physics: ScrollPhysics(),
+                scrollDirection: Axis.vertical,
+                child: Column(children: <Widget>[
+                  FutureBuilder(
+                      future: getPostList(context, widget.boardId, curPage),
+                      builder: (BuildContext context, AsyncSnapshot snapshot) {
+                        switch (snapshot.connectionState) {
+                          case ConnectionState.none:
+                          case ConnectionState.waiting:
+                          case ConnectionState.active:
+                            return CircularProgressIndicator();
+                          case ConnectionState.done:
+                            if (snapshot.hasError) {
+                              return Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Text(
+                                  'Error: ${snapshot.error}',
+                                  style: TextStyle(fontSize: 15),
+                                ),
+                              );
+                            } else {
+                              print("wowo" + posts.length.toString());
+                              print("sn" + snapshot.data.length.toString());
 
-                            //posts..addAll(snapshot.data);
-                            print("end" + posts.length.toString());
-                            print("------");
-                            if (snapshot.data.length == 0) hasNext = false;
-                            posts = snapshot.data;
-                            loading = true; // 이거!!!! ㅠㅠ
-                            return Column(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: <Widget>[
-                                  ListView.separated(
-                                    physics: NeverScrollableScrollPhysics(),
-                                    shrinkWrap: true,
-                                    itemCount: posts.length,
-                                    itemBuilder:
-                                        (BuildContext context, int index) {
-                                      return Column(
-                                        children: [
-                                          buildListView(
-                                              posts[index], width, height),
-                                          Container(height: height * 0.01),
-                                        ],
-                                      );
-                                    },
-                                    separatorBuilder: (context, index) {
-                                      //if (index == 0) return SizedBox.shrink();
-                                      return const Divider();
-                                    },
-                                  ),
-                                ]);
-                          }
-                          break;
+                              //posts..addAll(snapshot.data);
+                              print("end" + posts.length.toString());
+                              print("------");
+                              if (snapshot.data.length == 0) hasNext = false;
+                              posts = snapshot.data;
+                              loading = true; // 이거!!!! ㅠㅠ
+                              return Column(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: <Widget>[
+                                    ListView.separated(
+                                      physics: NeverScrollableScrollPhysics(),
+                                      shrinkWrap: true,
+                                      itemCount: posts.length,
+                                      itemBuilder:
+                                          (BuildContext context, int index) {
+                                        return Column(
+                                          children: [
+                                            buildListView(
+                                                posts[index], width, height),
+                                            Container(height: height * 0.01),
+                                          ],
+                                        );
+                                      },
+                                      separatorBuilder: (context, index) {
+                                        //if (index == 0) return SizedBox.shrink();
+                                        return const Divider();
+                                      },
+                                    ),
+                                  ]);
+                            }
+                            break;
 
-                        default:
-                          return CircularProgressIndicator();
-                      }
-                    }),
-              ]))),
+                          default:
+                            return CircularProgressIndicator();
+                        }
+                      }),
+                ])),
+          )),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           listController.animateTo(0.0,
