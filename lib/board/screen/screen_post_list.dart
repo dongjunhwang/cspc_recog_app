@@ -72,7 +72,7 @@ class _ListScreenState extends State<ListScreen> {
                               board_id: widget.boardId,
                               boardName: widget.boardName,
                             ))).then((e) {
-                  setState(() {});
+                  curPage = 1;
                 });
               },
             )
@@ -82,6 +82,7 @@ class _ListScreenState extends State<ListScreen> {
           onRefresh: () async {
             await Provider.of<BoardProvider>(context, listen: false)
                 .getReloadedPostList(widget.boardId);
+            curPage = 1;
           },
           child: Scrollbar(
             child: SingleChildScrollView(
