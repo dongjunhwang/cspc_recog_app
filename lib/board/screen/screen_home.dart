@@ -1,7 +1,9 @@
+import 'package:cspc_recog/board/provider/post_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:cspc_recog/board/screen/screen_post_list.dart';
 import 'package:cspc_recog/board/screen/screen_new_board.dart';
 import 'package:cspc_recog/board/model/model_board.dart';
+import 'package:provider/provider.dart';
 
 final List<Color> ColorList = [
   Color(0xff86e3ce),
@@ -125,7 +127,7 @@ class _HomeScreenState extends State<BoardPage> {
                                       context,
                                       MaterialPageRoute(
                                           builder: (context) =>
-                                              NewBoardScreen(groupId: 1)));
+                                               NewBoardScreen(groupId: 1)));
                                   setState(() {
                                     boards = [];
                                   });
@@ -190,10 +192,13 @@ class _HomeScreenState extends State<BoardPage> {
                 return Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => ListScreen(
-                              boardId: boards[i].boardId,
-                              boardName: boards[i].boardName,
-                            )));
+                        builder: (context) => ChangeNotifierProvider(
+                          create: (context) => BoardProvider(),
+                          child: ListScreen(
+                                boardId: boards[i].boardId,
+                                boardName: boards[i].boardName,
+                              ),
+                        )));
                 //});
               },
             ),
