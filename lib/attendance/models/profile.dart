@@ -41,17 +41,17 @@ Future<List<ProfileModel>> getProfileList(context) async {
   List<ProfileModel> profileList = [];
   try {
     final response = await http.get(
-      Uri.parse(UrlPrefix.urls + "users/"),
+      Uri.parse(UrlPrefix.urls + 'users'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
     );
+
     if (response.statusCode == 200) {
       final data = json.decode(utf8.decode(response.bodyBytes));
-
-      for (Map<String, dynamic> temp in data) {
-        profileList.add(ProfileModel.fromJson(temp));
-      }
+      profileList = data
+          .map<ProfileModel>((temp) => ProfileModel.fromJson(temp))
+          .toList();
     }
   } catch (e) {
     print(e);
@@ -73,7 +73,7 @@ Duration parseDuration(String s) {
     final int days = int.parse(parts[0]);
     final int hours = int.parse(part[0]);
     final int minutes = int.parse(part[1]);
-    final int seconds = int.parse(part[2]);
+    final int seconds = int.parse(part[2].split('.')[0]); // For over limit time
     return Duration(
         days: days, hours: hours, minutes: minutes, seconds: seconds);
   }
