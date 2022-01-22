@@ -127,7 +127,7 @@ class _HomeScreenState extends State<BoardPage> {
                                       context,
                                       MaterialPageRoute(
                                           builder: (context) =>
-                                               NewBoardScreen(groupId: 1)));
+                                              NewBoardScreen(groupId: 1)));
                                   setState(() {
                                     boards = [];
                                   });
@@ -193,12 +193,12 @@ class _HomeScreenState extends State<BoardPage> {
                     context,
                     MaterialPageRoute(
                         builder: (context) => ChangeNotifierProvider(
-                          create: (context) => BoardProvider(),
-                          child: ListScreen(
+                              create: (context) => BoardProvider(),
+                              child: ListScreen(
                                 boardId: boards[i].boardId,
                                 boardName: boards[i].boardName,
                               ),
-                        )));
+                            )));
                 //});
               },
             ),
