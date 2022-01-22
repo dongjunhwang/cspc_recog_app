@@ -14,47 +14,34 @@ class BoardProvider extends ChangeNotifier {
 
   bool get hasNext => _hasNext;
 
-  getReloadedPostList(boardId) async {
+  setReloadedPostList(boardId) async {
     _posts.clear();
     _hasNext = true;
+    await _getPostList(boardId, 1);
+    notifyListeners();
+  }
+
+  addNextPostList(boardId, page) async {
+    if (hasNext) {
+      await _getPostList(boardId, page);
+      notifyListeners();
+    }
+  }
+
+  _getPostList(boardId, page) async {
     Map<String, String> queryParameters = {
-      'page': "1",
+      'page': page.toString(),
     };
+    print("page" + page.toString());
+
     Uri uri = Uri.parse(UrlPrefix.urls + 'board/' + boardId.toString());
     final finalUri = uri.replace(queryParameters: queryParameters);
     final response = await http.get(finalUri);
     if (response.statusCode == 200) {
       _posts.addAll(parsePostList(utf8.decode(response.bodyBytes)));
-      //print("hehe!" + postList.length.toString());
     } else if (response.statusCode == 202) {
       _posts.addAll(parsePostList(utf8.decode(response.bodyBytes)));
       _hasNext = false;
-
-      //print("last!" + postList.length.toString());
-    }
-    notifyListeners();
-  }
-
-  getPostList(boardId, page) async {
-    if (hasNext) {
-      Map<String, String> queryParameters = {
-        'page': page.toString(),
-      };
-      print("page" + page.toString());
-
-      Uri uri = Uri.parse(UrlPrefix.urls + 'board/' + boardId.toString());
-      final finalUri = uri.replace(queryParameters: queryParameters);
-      final response = await http.get(finalUri);
-      if (response.statusCode == 200) {
-        _posts.addAll(parsePostList(utf8.decode(response.bodyBytes)));
-        //print("hehe!" + postList.length.toString());
-      } else if (response.statusCode == 202) {
-        _posts.addAll(parsePostList(utf8.decode(response.bodyBytes)));
-        _hasNext = false;
-
-        //print("last!" + postList.length.toString());
-      }
-      notifyListeners();
     }
   }
 }

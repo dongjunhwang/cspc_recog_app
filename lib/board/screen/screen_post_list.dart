@@ -26,7 +26,6 @@ class ListScreen extends StatefulWidget {
 }
 
 class _ListScreenState extends State<ListScreen> {
-  bool isLoading = false;
   BoardProvider boardProvider;
   //List<Post> posts = [];
   //List<Comment> comments = [];
@@ -45,9 +44,7 @@ class _ListScreenState extends State<ListScreen> {
 
   void initPostList() async {
     boardProvider = Provider.of<BoardProvider>(context, listen: false);
-    await boardProvider.getReloadedPostList(widget.boardId).then(() {
-      loading = true;
-    });
+    await boardProvider.setReloadedPostList(widget.boardId);
   }
 
   @override
@@ -80,8 +77,7 @@ class _ListScreenState extends State<ListScreen> {
       //backgroundColor: Colors.deepOrange,
       body: RefreshIndicator(
           onRefresh: () async {
-            await Provider.of<BoardProvider>(context, listen: false)
-                .getReloadedPostList(widget.boardId);
+            await boardProvider.setReloadedPostList(widget.boardId);
             curPage = 1;
           },
           child: Scrollbar(
@@ -91,7 +87,7 @@ class _ListScreenState extends State<ListScreen> {
                 scrollDirection: Axis.vertical,
                 child: Column(children: <Widget>[
                   Consumer<BoardProvider>(builder: (context, board, _) {
-                    List<Post> posts = board.posts;
+                    final List<Post> posts = board.posts;
                     return Column(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: <Widget>[
@@ -136,7 +132,7 @@ class _ListScreenState extends State<ListScreen> {
             listController.position.maxScrollExtent &&
         boardProvider.hasNext) {
       //print(curPage);
-      boardProvider.getPostList(widget.boardId, ++curPage);
+      boardProvider.addNextPostList(widget.boardId, ++curPage);
     }
   }
 
