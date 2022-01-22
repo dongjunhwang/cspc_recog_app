@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:cspc_recog/board/model/model_board.dart';
 import 'package:cspc_recog/board/screen/screen_post.dart';
 import 'package:flutter/cupertino.dart';
@@ -6,6 +8,7 @@ import 'package:cspc_recog/urls.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
+import 'package:path_provider/path_provider.dart';
 
 class EditPostScreen extends StatefulWidget {
   Post post;
@@ -33,20 +36,49 @@ class _EditPostScreenState extends State<EditPostScreen> {
   List<ImageUrl> images = [];
 
   @override
-  Widget build(BuildContext context) {
-    Size screenSize = MediaQuery.of(context).size;
-    double width = screenSize.width;
-    double height = screenSize.height;
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getImageFile();
+  }
 
-    _editPost() async {
-      var request = http.MultipartRequest(
-          'PUT',
-          Uri.parse(
-              UrlPrefix.urls + 'board/post/' + widget.post.id.toString()));
-      request.fields['title'] = title;
-      request.fields['author'] = profileId.toString();
-      request.fields['contents'] = content;
-      request.fields['board_id'] = widget.boardId.toString();
+  void getImageFile() async {
+    final List<ImageUrl> urls = await getImages(content, widget.post.id);
+
+    final documentDirectory = await getApplicationDocumentsDirectory();
+
+    urls.forEach((element) async {
+      final image = await http
+          .get(Uri.parse(UrlPrefix.urls + element.imgUrl.substring(1)));
+      File file =
+          File(documentDirectory.path + '${element.imgUrl.split('/').last}');
+      await file.writeAsBytes(image.bodyBytes);
+      setState(() {
+        files.add(XFile(file.path));
+      });
+    });
+    print(files.length);
+  }
+
+  _editPost() async {
+    var request = http.MultipartRequest('PUT',
+        Uri.parse(UrlPrefix.urls + 'board/post/' + widget.post.id.toString()));
+    request.fields['title'] = title;
+    request.fields['author'] = profileId.toString();
+    request.fields['contents'] = content;
+    request.fields['board_id'] = widget.boardId.toString();
+    if (files.isNotEmpty) {
+      /*
+      widget.post.hasImage = true;
+      files.forEach((file) async {
+        request.files.add(
+          http.MultipartFile('image', (http.ByteStream(file.openRead())).cast(),
+              await file.length(),
+              filename: file.name + '.jpg'),
+        );
+      });
+      */
+
       await Future.forEach(
           files,
           (file) async => {
@@ -58,13 +90,23 @@ class _EditPostScreenState extends State<EditPostScreen> {
                       filename: widget.boardId.toString() + '.jpg'),
                 ),
               });
-      final response = await request.send();
-      if (response.statusCode == 200) {
-        return;
-      } else {
-        throw Exception('falied!');
-      }
+    } else {
+      widget.post.hasImage = false;
     }
+    request.fields['has_image'] = widget.post.hasImage.toString();
+    final response = await request.send();
+    if (response.statusCode == 200) {
+      return;
+    } else {
+      throw Exception('falied!');
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    Size screenSize = MediaQuery.of(context).size;
+    double width = screenSize.width;
+    double height = screenSize.height;
 
     return Scaffold(
         resizeToAvoidBottomInset: false,
@@ -148,6 +190,7 @@ class _EditPostScreenState extends State<EditPostScreen> {
                       ///내용
                       ),
                 ),
+                imagePreview(context),
                 Container(
                   child: ButtonTheme(
                     minWidth: width * 0.5,
@@ -203,6 +246,27 @@ class _EditPostScreenState extends State<EditPostScreen> {
             ),
           ),
         ])));
+  }
+
+  Widget imagePreview(context) {
+    return Container(
+      alignment: Alignment.bottomLeft,
+      padding: EdgeInsets.all(10),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween, // added line
+        mainAxisSize: MainAxisSize.min, // added line
+        children: <Widget>[
+          for (XFile file in files)
+            Image.file(
+              File(file.path),
+              scale: 0.3,
+              width: 50,
+              height: 50,
+            ),
+        ],
+      ),
+    );
   }
 
   takeImage(mContext) {
