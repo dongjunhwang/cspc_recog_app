@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:cspc_recog/board/model/model_board.dart';
 import 'package:cspc_recog/board/screen/screen_post.dart';
 import 'package:flutter/cupertino.dart';
@@ -124,7 +126,7 @@ class _NewPostScreenState extends State<NewPostScreen> {
                   child: Container(
                       padding: EdgeInsets.fromLTRB(width * 0.024, 0, 0, 0),
                       child: TextFormField(
-                        decoration: const InputDecoration(
+                        decoration: InputDecoration(
                           border: InputBorder.none,
                           hintText: '내용',
                         ),
@@ -144,6 +146,7 @@ class _NewPostScreenState extends State<NewPostScreen> {
                       ///내용
                       ),
                 ),
+                imagePreview(context),
                 Container(
                   child: ButtonTheme(
                     minWidth: width * 0.5,
@@ -209,7 +212,27 @@ class _NewPostScreenState extends State<NewPostScreen> {
         ])));
   }
 
-  takeImage(mContext) {
+  Widget imagePreview(context) {
+    return Container(
+      alignment: Alignment.bottomLeft,
+      padding: EdgeInsets.all(10),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween, // added line
+        mainAxisSize: MainAxisSize.min, // added line
+        children: <Widget>[
+          for (XFile file in files)
+            Image.file(
+              File(file.path),
+              width: 50,
+              height: 50,
+            ),
+        ],
+      ),
+    );
+  }
+
+  takeImage(mContext) async {
     return showDialog(
         context: mContext,
         builder: (context) {

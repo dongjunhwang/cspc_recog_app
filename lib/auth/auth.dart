@@ -44,12 +44,12 @@ class _LoginPageState extends State<LoginPage> {
         child: _isLoading
             ? Center(child: CircularProgressIndicator())
             : ListView(
-          children: <Widget>[
-            headerSection(),
-            textSection(),
-            buttonSection(),
-          ],
-        ),
+                children: <Widget>[
+                  headerSection(),
+                  textSection(),
+                  buttonSection(),
+                ],
+              ),
       ),
     );
   }
@@ -84,16 +84,14 @@ class _LoginPageState extends State<LoginPage> {
         print(myUser.userName);
         */
 
-
         //logOut(myLogin.token);
 
         sharedPreferences.setString("token", myToken.token);
         //print(sharedPreferences.getString("token"));
 
-
         Navigator.of(context).pushAndRemoveUntil(
             MaterialPageRoute(builder: (BuildContext context) => MyMainPage()),
-                (Route<dynamic> route) => false);
+            (Route<dynamic> route) => false);
       }
     } else {
       print("login false");
@@ -108,7 +106,7 @@ class _LoginPageState extends State<LoginPage> {
     print("userget start");
     MyLoginUser myLogin = Provider.of<MyLoginUser>(context, listen: false);
 
-    String knoxToken = 'Token '+ token;
+    String knoxToken = 'Token ' + token;
     final response = await http.get(
       Uri.parse(UrlPrefix.urls + "users/auth/user/"),
       headers: <String, String>{
@@ -162,11 +160,10 @@ class _LoginPageState extends State<LoginPage> {
     );
 
     if (response.statusCode == 200) {
-      final data = json.decode(response.body);
-
-      if (data != null) {
-
-        for (Map<String, dynamic> temp in data) {
+      final data = json.decode(utf8.decode(response.bodyBytes));
+      final dataCast = data['profile'] ?? null;
+      if (dataCast != null) {
+        for (Map<String, dynamic> temp in dataCast) {
           myProfileList.add(ProfileModel.fromJson(temp));
         }
         print(myProfileList);
@@ -180,20 +177,15 @@ class _LoginPageState extends State<LoginPage> {
         print(myProfileListAfter[1].profileId);
         */
       }
-    } else {
-    }
+    } else {}
   }
-
-
-
-
 
   /*
     토큰 넣어주면 해당 토큰 사라짐
 
    */
   logOut(String token) async {
-    String knoxToken = 'Token '+ token;
+    String knoxToken = 'Token ' + token;
 
     final response = await http.post(
       Uri.parse(UrlPrefix.urls + "users/auth/logout/"),
@@ -214,23 +206,21 @@ class _LoginPageState extends State<LoginPage> {
 
   Container buttonSection() {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 15.0, ),
+      padding: EdgeInsets.symmetric(
+        horizontal: 15.0,
+      ),
       margin: EdgeInsets.only(top: 25.0),
       child: Column(children: <Widget>[
         ElevatedButton(
-          child:
-          Text(
+          child: Text(
             "Sign In",
-            style: TextStyle(
-                color: Colors.white70,
-                fontSize: 20
-            ),
+            style: TextStyle(color: Colors.white70, fontSize: 20),
           ),
           style: ElevatedButton.styleFrom(
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.0)),
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(5.0)),
             primary: Colors.indigoAccent,
             onPrimary: Colors.black,
-
             minimumSize: Size(MediaQuery.of(context).size.width, 40),
           ),
           onPressed: () {
@@ -240,31 +230,23 @@ class _LoginPageState extends State<LoginPage> {
             signIn(idController.text, passwordController.text);
           },
         ),
-
         SizedBox(height: 20.0),
         TextButton(
-          child:
-          Text(
+          child: Text(
             "Don't have an account yet? Sign Up",
-            style:
-            TextStyle(
-                color: Colors.white,
-                fontSize: 20,
-                fontWeight: FontWeight.bold
-            ),
+            style: TextStyle(
+                color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
           ),
           onPressed: () {
             setState(() {
               _isLoading = true;
             });
 
-            Navigator.of(context).push(
-                MaterialPageRoute(builder: (BuildContext context) => RegisterPage()));
-
+            Navigator.of(context).push(MaterialPageRoute(
+                builder: (BuildContext context) => RegisterPage()));
           },
         )
-      ]
-      ),
+      ]),
     );
   }
 
