@@ -44,16 +44,6 @@ class _AttendancePageState extends State<AttendancePage> {
     height = MediaQuery.of(context).size.height;
     width = MediaQuery.of(context).size.width;
     return Scaffold(
-      appBar: AppBar(
-        title: Text(_title),
-        centerTitle: true,
-        titleTextStyle: TextStyle(
-          color: Colors.black,
-          fontSize: 39,
-          fontFamily: "Pretendard",
-          fontWeight: FontWeight.w500,
-        ),
-      ),
       body: Container(
         child: FutureBuilder<List<ProfileModel>>(
             future: getProfileList(context),
@@ -177,9 +167,8 @@ class _AttendancePageState extends State<AttendancePage> {
                       Text(
                         profile.nickName,
                         style: TextStyle(
-                          fontSize: 23,
+                          fontSize: 20,
                           fontFamily: "Pretendard",
-                          fontWeight: FontWeight.w500,
                         ),
                       ),
 

@@ -29,10 +29,10 @@ class MainApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: ThemeData(
+        fontFamily: "Pretendard",
         scaffoldBackgroundColor: Color(0xffF2F2F2),
         appBarTheme: AppBarTheme(
           backgroundColor: Color(0xff86E3CE),
-          toolbarHeight: 50,
           elevation: 0.0,
         ),
       ),
@@ -73,10 +73,19 @@ class _MyMainPageState extends State<MyMainPage> {
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
-        title: Text(_title),
+        toolbarHeight: MediaQuery.of(context).size.height * 0.14,
+        title: Text("CSPC"),
         //title: _currentIndex != 2 ? Text(_title[_currentIndex]) : Text(''),
         automaticallyImplyLeading: false,
-        backgroundColor: Colors.transparent,
+        //backgroundColor: Colors.transparent,
+        centerTitle: true,
+
+        titleTextStyle: TextStyle(
+          color: Colors.black,
+          fontSize: 39,
+          fontFamily: "Pretendard",
+          fontWeight: FontWeight.w700,
+        ),
 
         /*
         actions: [
@@ -86,7 +95,7 @@ class _MyMainPageState extends State<MyMainPage> {
         ],
         */
       ),
-      extendBodyBehindAppBar: true,
+      //extendBodyBehindAppBar: true,
       body: _children[_currentIndex],
       bottomNavigationBar: SalomonBottomBar(
         //type: BottomNavigationBarType.fixed,

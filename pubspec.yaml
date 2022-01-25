@@ -104,7 +104,7 @@ flutter:
   fonts:
     - family : Pretendard
       fonts:
-        - asset : fonts/Pretendard-Black.otf
         - asset : fonts/Pretendard-Regular.otf
+        - asset : fonts/Pretendard-Black.otf
         - asset : fonts/Pretendard-Bold.otf
         - asset : fonts/Pretendard-SemiBold.otf
