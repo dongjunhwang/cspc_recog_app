@@ -28,6 +28,14 @@ class MainApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      theme: ThemeData(
+        scaffoldBackgroundColor: Color(0xffF2F2F2),
+        appBarTheme: AppBarTheme(
+          backgroundColor: Color(0xff86E3CE),
+          toolbarHeight: 50,
+          elevation: 0.0,
+        ),
+      ),
       localizationsDelegates: [
         GlobalMaterialLocalizations.delegate,
       ],
@@ -53,7 +61,7 @@ class _MyMainPageState extends State<MyMainPage> {
   GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   final List<Widget> _children = [AttendancePage(), BoardPage(), Calendar()];
-  final List _title = ["Attendance", "Board", "Calendar"];
+  String _title = '';
   void _onTap(int index) {
     setState(() {
       _currentIndex = index;
@@ -65,15 +73,18 @@ class _MyMainPageState extends State<MyMainPage> {
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
-        title: _currentIndex != 2 ? Text(_title[_currentIndex]) : Text(''),
+        title: Text(_title),
+        //title: _currentIndex != 2 ? Text(_title[_currentIndex]) : Text(''),
         automaticallyImplyLeading: false,
         backgroundColor: Colors.transparent,
-        elevation: 0.0,
+
+        /*
         actions: [
           IconButton(
               icon: Icon(Icons.account_circle_rounded),
               onPressed: () => _scaffoldKey.currentState.openEndDrawer()),
         ],
+        */
       ),
       extendBodyBehindAppBar: true,
       body: _children[_currentIndex],
@@ -98,9 +109,6 @@ class _MyMainPageState extends State<MyMainPage> {
             selectedColor: Color(0xfffa897b),
           )
         ],
-      ),
-      endDrawer: Drawer(
-        child: ProfileDrawerPage(),
       ),
     );
   }

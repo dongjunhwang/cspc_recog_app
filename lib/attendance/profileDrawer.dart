@@ -42,11 +42,8 @@ class ProfileEditPageState extends State<ProfileDrawerPage> {
 
               return Container(
                 decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.center,
-                  colors: [profileColorList[0], profileColorList[1]],
-                )),
+                  color: colorMain,
+                ),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
