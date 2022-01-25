@@ -28,7 +28,7 @@ dependencies:
   flutter_localizations: # use in calendar
     sdk: flutter
   table_calendar: ^3.0.2
-  flutter_form_builder:
+  flutter_form_builder: ^6.0.1
 
   #For Attendance
   http:
@@ -65,7 +65,7 @@ dev_dependencies:
 flutter:
   assets:
     - assets/images/
-    - assets/fonts/
+    - assets/
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.
@@ -104,7 +104,7 @@ flutter:
   fonts:
     - family : Pretendard
       fonts:
-        - asset : fonts/Pretendard-Regular.otf
-        - asset : fonts/Pretendard-Black.otf
-        - asset : fonts/Pretendard-Bold.otf
-        - asset : fonts/Pretendard-SemiBold.otf
+        - asset : assets/fonts/Pretendard-Regular.otf
+        - asset : assets/fonts/Pretendard-Black.otf
+        - asset : assets/fonts/Pretendard-Bold.otf
+        - asset : assets/fonts/Pretendard-SemiBold.otf
