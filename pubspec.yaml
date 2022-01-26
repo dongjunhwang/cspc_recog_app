@@ -31,7 +31,7 @@ dependencies:
   flutter_form_builder: ^6.0.1
 
   #For Attendance
-  http:
+  http: ^0.13.4
   flutter_icons: ^1.1.0
   salomon_bottom_bar: ^3.1.0
   circle_list: ^1.0.5
@@ -39,8 +39,8 @@ dependencies:
   #For Board
   flutter_swiper:
   like_button: ^2.0.2
-  image_picker:
-  path_provider:
+  image_picker: ^0.8.4+4
+  path_provider: ^2.0.8
   #xfile: 
 
   #For Auth
@@ -104,7 +104,26 @@ flutter:
   fonts:
     - family : Pretendard
       fonts:
-        - asset : assets/fonts/Pretendard-Regular.otf
         - asset : assets/fonts/Pretendard-Black.otf
+          weight: 900
+        - asset : assets/fonts/Pretendard-ExtraBold.otf
+          weight: 800
         - asset : assets/fonts/Pretendard-Bold.otf
+          weight: 700
         - asset : assets/fonts/Pretendard-SemiBold.otf
+          weight: 600
+        - asset : assets/fonts/Pretendard-Medium.otf
+          weight: 500 
+        - asset : assets/fonts/Pretendard-Regular.otf 
+          weight: 400
+        - asset : assets/fonts/Pretendard-Light.otf
+          weight: 300
+        - asset : assets/fonts/Pretendard-ExtraLight.otf
+          weight: 200
+        - asset : assets/fonts/Pretendard-Thin.otf
+          weight: 100
+        
+        
+    - family : CustomIcons
+      fonts:
+        - asset : assets/fonts/CustomIcons.ttf
