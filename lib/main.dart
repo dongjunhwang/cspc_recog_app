@@ -3,6 +3,7 @@ import 'package:cspc_recog/auth/auth.dart';
 import 'package:cspc_recog/calendar/calendar.dart';
 import 'package:cspc_recog/attendance/mainPage.dart';
 import 'package:cspc_recog/board/screen/screen_home.dart';
+import 'package:cspc_recog/common/custom_icons_icons.dart';
 import 'package:cspc_recog/providers/userData.dart';
 
 import 'package:flutter/material.dart';
@@ -59,6 +60,7 @@ class MyMainPage extends StatefulWidget {
 class _MyMainPageState extends State<MyMainPage> {
   int _currentIndex = 0;
   GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  double height;
 
   final List<Widget> _children = [AttendancePage(), BoardPage(), Calendar()];
   String _title = '';
@@ -70,32 +72,39 @@ class _MyMainPageState extends State<MyMainPage> {
 
   @override
   Widget build(BuildContext context) {
+    height = MediaQuery.of(context).size.height;
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
-        toolbarHeight: MediaQuery.of(context).size.height * 0.14,
-        title: Text("CSPC"),
-        //title: _currentIndex != 2 ? Text(_title[_currentIndex]) : Text(''),
+        toolbarHeight: height * 0.14,
+        title: Padding(
+          padding: EdgeInsets.only(top: height * 0.06),
+          child: Text("CSPC"),
+        ), //TODO FIX
         automaticallyImplyLeading: false,
-        //backgroundColor: Colors.transparent,
         centerTitle: true,
 
         titleTextStyle: TextStyle(
           color: Colors.black,
-          fontSize: 39,
+          fontSize: 29,
           fontFamily: "Pretendard",
-          fontWeight: FontWeight.w700,
+          fontWeight: FontWeight.bold,
         ),
 
-        /*
         actions: [
-          IconButton(
-              icon: Icon(Icons.account_circle_rounded),
-              onPressed: () => _scaffoldKey.currentState.openEndDrawer()),
+          Padding(
+            padding: EdgeInsets.only(top: height * 0.06),
+            child: IconButton(
+              icon: Icon(
+                CustomIcons.bell_icon,
+                color: Colors.white,
+              ),
+              onPressed: () {},
+              //onPressed: () => _scaffoldKey.currentState.openEndDrawer()),
+            ),
+          ),
         ],
-        */
       ),
-      //extendBodyBehindAppBar: true,
       body: _children[_currentIndex],
       bottomNavigationBar: SalomonBottomBar(
         //type: BottomNavigationBarType.fixed,
