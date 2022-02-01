@@ -71,18 +71,6 @@ class _AttendancePageState extends State<AttendancePage> {
               }
             }),
       ),
-      floatingActionButton: IconButton(
-        padding: EdgeInsets.only(
-          right: width * 0.1,
-          bottom: height * 0.06,
-        ),
-        icon: Icon(
-          Icons.replay_circle_filled_sharp,
-          color: colorMain,
-          size: height * 0.07,
-        ),
-        color: colorMain,
-      ),
     );
   }
 
@@ -146,16 +134,16 @@ class _AttendancePageState extends State<AttendancePage> {
                       fontSize: 24,
                     ),
                   ),
-                  Padding(padding: EdgeInsets.only(left: width * 0.12)),
+                  Padding(padding: EdgeInsets.only(left: width * 0.1)),
                   SizedBox(
                     height: height * 0.1,
-                    width: height * 0.16,
+                    width: width * 0.28,
                     child: Stack(
                       children: [
                         profileImageView(
                             profile.profileImageUrl, height * 0.09),
                         Positioned(
-                          left: height * 0.07,
+                          left: height * 0.05,
                           bottom: 0,
                           child: Text(
                             profile.nickName,
@@ -187,8 +175,8 @@ class _AttendancePageState extends State<AttendancePage> {
 
   Widget woriContent() {
     return Container(
+      alignment: Alignment.center,
       padding: EdgeInsets.symmetric(
-        horizontal: width * 0.03,
         vertical: height * 0.02,
       ),
       child: Column(
@@ -197,10 +185,10 @@ class _AttendancePageState extends State<AttendancePage> {
           Icon(
             CustomIcons.wori2,
             color: Colors.white,
-            size: width * 0.13,
+            size: width * 0.1,
           ),
           Padding(
-            padding: EdgeInsets.only(left: width * 0.08, top: height * 0.01),
+            padding: EdgeInsets.only(left: width * 0.06, top: height * 0.015),
             child: Text(
               "우리",
               style: TextStyle(
@@ -252,50 +240,68 @@ class _AttendancePageState extends State<AttendancePage> {
   Widget onlineProfileView(final List<ProfileModel> profileList) {
     final onlineProfileList = profileList.where((e) => e.isOnline);
 
-    return Container(
-        decoration: BoxDecoration(
-          color: colorMain.withOpacity(0.3),
-          borderRadius: BorderRadius.all(Radius.circular(10)),
-        ),
-        child: SizedBox(
-          height: height * 0.5,
-          width: width * 0.9,
-          child: Center(
-            child: CircleList(
-              origin: Offset(0, 0),
-              childrenPadding: 10,
-              innerRadius: height * 0.05,
-              outerRadius: height * 0.2,
-              innerCircleRotateWithChildren: false,
-              children: [
-                for (ProfileModel profile in onlineProfileList)
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Container(
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: colorMain,
+    return Stack(
+      children: [
+        Container(
+          decoration: BoxDecoration(
+            color: colorMain.withOpacity(0.3),
+            borderRadius: BorderRadius.all(Radius.circular(10)),
+          ),
+          child: SizedBox(
+            height: height * 0.5,
+            width: width * 0.9,
+            child: Center(
+              child: CircleList(
+                initialAngle: 5,
+                origin: Offset(0, 0),
+                innerRadius: 0,
+                outerRadius: height * 0.25,
+                innerCircleRotateWithChildren: false,
+                children: [
+                  for (ProfileModel profile in onlineProfileList)
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Container(
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: colorMain,
+                          ),
+                          alignment: Alignment.center,
+                          width: height * 0.1,
+                          height: height * 0.1,
+                          child: profileImageView(
+                              profile.profileImageUrl, height * 0.1),
                         ),
-                        alignment: Alignment.center,
-                        width: height * 0.1,
-                        height: height * 0.1,
-                        child: profileImageView(
-                            profile.profileImageUrl, height * 0.1),
-                      ),
-                      Text(
-                        profile.nickName,
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontFamily: "Pretendard",
-                          fontWeight: FontWeight.bold,
+                        Text(
+                          profile.nickName,
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontFamily: "Pretendard",
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
-              ],
+                      ],
+                    ),
+                ],
+              ),
             ),
           ),
-        ));
+        ),
+        Positioned(
+          right: height * 0.01,
+          bottom: width * 0.01,
+          child: IconButton(
+              onPressed: () {
+                setState(() {});
+              },
+              icon: Icon(
+                Icons.replay_circle_filled_sharp,
+                color: colorMain,
+                size: height * 0.05,
+              )),
+        )
+      ],
+    );
   }
 }

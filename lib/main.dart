@@ -61,6 +61,7 @@ class _MyMainPageState extends State<MyMainPage> {
   int _currentIndex = 0;
   GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   double height;
+  double statusBarHeight;
 
   final List<Widget> _children = [AttendancePage(), BoardPage(), Calendar()];
   String _title = '';
@@ -73,14 +74,12 @@ class _MyMainPageState extends State<MyMainPage> {
   @override
   Widget build(BuildContext context) {
     height = MediaQuery.of(context).size.height;
+    statusBarHeight = MediaQuery.of(context).padding.top;
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
-        toolbarHeight: height * 0.14,
-        title: Padding(
-          padding: EdgeInsets.only(top: height * 0.06),
-          child: Text("CSPC"),
-        ), //TODO FIX
+        toolbarHeight: height * 0.14 - statusBarHeight,
+        title: Text("CSPC"), //TODO FIX
         automaticallyImplyLeading: false,
         centerTitle: true,
 
@@ -92,16 +91,13 @@ class _MyMainPageState extends State<MyMainPage> {
         ),
 
         actions: [
-          Padding(
-            padding: EdgeInsets.only(top: height * 0.06),
-            child: IconButton(
-              icon: Icon(
-                CustomIcons.bell_icon,
-                color: Colors.white,
-              ),
-              onPressed: () {},
-              //onPressed: () => _scaffoldKey.currentState.openEndDrawer()),
+          IconButton(
+            icon: Icon(
+              CustomIcons.bell_icon,
+              color: Colors.white,
             ),
+            onPressed: () {},
+            //onPressed: () => _scaffoldKey.currentState.openEndDrawer()),
           ),
         ],
       ),
