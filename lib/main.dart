@@ -86,8 +86,7 @@ class _MyMainPageState extends State<MyMainPage> {
         titleTextStyle: TextStyle(
           color: Colors.black,
           fontSize: 29,
-          fontFamily: "Pretendard",
-          fontWeight: FontWeight.bold,
+          fontWeight: FontWeight.w800,
         ),
 
         actions: [
