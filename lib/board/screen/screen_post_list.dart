@@ -147,6 +147,8 @@ class _ListScreenState extends State<ListScreen> {
                         board_id: widget.boardId,
                         boardName: widget.boardName,
                       ))).then((e) {
+            // post_list 돌아올 때 변경된 post reload
+            boardProvider.setReloadedPostList(widget.boardId);
             curPage = 1;
           });
         },
