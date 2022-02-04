@@ -28,22 +28,24 @@ dependencies:
   flutter_localizations: # use in calendar
     sdk: flutter
   table_calendar: ^3.0.2
-  flutter_form_builder:
+  flutter_form_builder: ^6.0.1
 
   #For Attendance
-  http:
+  http: ^0.13.4
   flutter_icons: ^1.1.0
   salomon_bottom_bar: ^3.1.0
+  circle_list: ^1.0.5
 
   #For Board
   flutter_swiper:
   like_button: ^2.0.2
-  image_picker:
-  xfile:
+  image_picker: ^0.8.4+4
+  path_provider: ^2.0.8
+  #xfile: 
 
   #For Auth
   shared_preferences: ^2.0.7
-  provider:
+  provider: ^5.0.0
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -63,6 +65,7 @@ dev_dependencies:
 flutter:
   assets:
     - assets/images/
+    - assets/
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.
@@ -98,3 +101,29 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
+  fonts:
+    - family : Pretendard
+      fonts:
+        - asset : assets/fonts/Pretendard-Black.otf
+          weight: 900
+        - asset : assets/fonts/Pretendard-ExtraBold.otf
+          weight: 800
+        - asset : assets/fonts/Pretendard-Bold.otf
+          weight: 700
+        - asset : assets/fonts/Pretendard-SemiBold.otf
+          weight: 600
+        - asset : assets/fonts/Pretendard-Medium.otf
+          weight: 500 
+        - asset : assets/fonts/Pretendard-Regular.otf 
+          weight: 400
+        - asset : assets/fonts/Pretendard-Light.otf
+          weight: 300
+        - asset : assets/fonts/Pretendard-ExtraLight.otf
+          weight: 200
+        - asset : assets/fonts/Pretendard-Thin.otf
+          weight: 100
+        
+        
+    - family : CustomIcons
+      fonts:
+        - asset : assets/fonts/CustomIcons.ttf

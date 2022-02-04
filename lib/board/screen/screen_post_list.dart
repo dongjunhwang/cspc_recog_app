@@ -2,8 +2,10 @@ import 'package:cspc_recog/board/model/model_board.dart';
 import 'package:cspc_recog/board/provider/post_provider.dart';
 import 'package:cspc_recog/board/screen/screen_post.dart';
 import 'package:cspc_recog/board/screen/screen_new_post.dart';
+import 'package:cspc_recog/common/custom_icons_icons.dart';
 
 import 'package:flutter/material.dart';
+
 import 'package:intl/intl.dart';
 
 import 'package:provider/provider.dart';
@@ -53,27 +55,55 @@ class _ListScreenState extends State<ListScreen> {
     double width = screenSize.width;
     double height = screenSize.height;
 
-    return SafeArea(
-        child: Scaffold(
+    return Scaffold(
       appBar: AppBar(
-          title: Text(widget.boardName),
-          backgroundColor: ColorList[3],
-          actions: [
-            new IconButton(
-              icon: Icon(Icons.create),
-              onPressed: () async {
-                return await Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => NewPostScreen(
-                              board_id: widget.boardId,
-                              boardName: widget.boardName,
-                            ))).then((e) {
-                  curPage = 1;
-                });
-              },
-            )
-          ]),
+        leadingWidth: width * 0.15,
+        leading: IconButton(
+          icon: Icon(CustomIcons.before),
+          color: Colors.black,
+          iconSize: height * 0.025,
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+        title: Column(
+          children: [
+            Text(
+              widget.boardName,
+              style: TextStyle(
+                color: Colors.black,
+                fontWeight: FontWeight.bold,
+                fontSize: 25,
+              ),
+            ),
+            Text(
+              "CSPC",
+              style: TextStyle(
+                color: Colors.black38,
+                fontWeight: FontWeight.bold,
+                fontSize: 15,
+              ),
+            ),
+          ],
+        ),
+        centerTitle: true,
+        /*
+        actions: [
+          new IconButton(
+            icon: Icon(Icons.create),
+            onPressed: () async {
+              return await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => NewPostScreen(
+                            board_id: widget.boardId,
+                            boardName: widget.boardName,
+                          ))).then((e) {
+                curPage = 1;
+              });
+            },
+          )
+        ],
+        */
+      ),
       //backgroundColor: Colors.deepOrange,
       body: RefreshIndicator(
           onRefresh: () async {
@@ -91,17 +121,13 @@ class _ListScreenState extends State<ListScreen> {
                     return Column(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: <Widget>[
+                          Padding(padding: EdgeInsets.only(top: height * 0.01)),
                           ListView.separated(
                             physics: NeverScrollableScrollPhysics(),
                             shrinkWrap: true,
                             itemCount: posts.length,
                             itemBuilder: (BuildContext context, int index) {
-                              return Column(
-                                children: [
-                                  buildListView(posts[index], width, height),
-                                  Container(height: height * 0.01),
-                                ],
-                              );
+                              return buildListView(posts[index], width, height);
                             },
                             separatorBuilder: (context, index) {
                               //if (index == 0) return SizedBox.shrink();
@@ -113,15 +139,21 @@ class _ListScreenState extends State<ListScreen> {
                 ])),
           )),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          listController.animateTo(0.0,
-              duration: const Duration(milliseconds: 300),
-              curve: Curves.easeOut);
+        onPressed: () async {
+          return await Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => NewPostScreen(
+                        board_id: widget.boardId,
+                        boardName: widget.boardName,
+                      ))).then((e) {
+            curPage = 1;
+          });
         },
-        child: const Icon(Icons.navigation_sharp),
+        child: const Icon(CustomIcons.pen),
         backgroundColor: ColorList[2],
       ),
-    ));
+    );
   }
 
   void scrollListener() {
@@ -153,87 +185,75 @@ class _ListScreenState extends State<ListScreen> {
 
     return GestureDetector(
       child: Container(
-        decoration: BoxDecoration(
-            //borderRadius: BorderRadius.circular(30),
-            //border: Border.all(color:Colors.white38),
-            //color: Colors.grey.shade200
-            ),
-        height: height * 0.14,
+        padding: EdgeInsets.symmetric(
+          horizontal: width * 0.05,
+        ),
+
+        height: height * 0.09,
         //width: width*0.9,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: <Widget>[
-            Container(height: height * 0.005),
-            Row(children: <Widget>[
-              Container(width: width * 0.03),
-              Container(
-                width: width * 0.5,
-                padding: EdgeInsets.only(top: width * 0.012),
-                child: Text(
-                  post.title,
-                  textAlign: TextAlign.left,
-                  maxLines: 1,
-                  style: TextStyle(
-                    fontSize: width * 0.05,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-              Expanded(child: Container()),
-              Container(
-                  child: Text(
-                postTime,
-                style: TextStyle(
-                  fontSize: width * 0.04,
-                ),
-              )),
-              Container(width: width * 0.02),
-            ]),
-            Container(
-              width: width * 0.9,
-              height: height * 0.04,
-              padding: EdgeInsets.only(top: width * 0.012),
-              child: Text(
-                post.contents,
-                textAlign: TextAlign.left,
-                maxLines: 1,
-                style: TextStyle(
-                  fontSize: width * 0.04,
-                ),
+        child: Container(
+          decoration: BoxDecoration(
+            //borderRadius: BorderRadius.circular(30),
+            border: Border(
+              bottom: BorderSide(
+                width: 1,
+                color: Colors.black.withOpacity(0.5),
               ),
             ),
-            Expanded(child: Container()),
-            Row(
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                Container(width: width * 0.02),
+            //color: Colors.grey.shade200
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: <Widget>[
+              Row(children: <Widget>[
                 Container(
-                  padding: EdgeInsets.all(width * 0.012),
+                  width: width * 0.5,
                   child: Text(
-                    '작성자:' + post.nickName,
+                    post.title,
                     textAlign: TextAlign.left,
                     maxLines: 1,
                     style: TextStyle(
-                      fontSize: width * 0.03,
+                      color: Colors.black,
+                      fontSize: height * 0.03,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
                 ),
                 Expanded(child: Container()),
                 Container(
-                  padding: EdgeInsets.all(width * 0.012),
-                  child: Text(
-                    '좋아요:' + post.like.toString(),
-                    textAlign: TextAlign.center,
-                    maxLines: 1,
-                    style: TextStyle(
-                      fontSize: width * 0.03,
+                    child: Text(
+                  postTime,
+                  style: TextStyle(
+                    fontSize: width * 0.04,
+                  ),
+                )),
+              ]),
+              Row(
+                children: <Widget>[
+                  Container(
+                    child: Text(
+                      post.nickName,
+                      textAlign: TextAlign.left,
+                      maxLines: 1,
+                      style: TextStyle(
+                        fontSize: width * 0.03,
+                      ),
                     ),
                   ),
-                ),
-                Container(width: width * 0.02),
-              ],
-            ),
-          ],
+                  Expanded(child: Container()),
+                  Container(
+                    child: Text(
+                      '좋아요:' + post.like.toString(),
+                      maxLines: 1,
+                      style: TextStyle(
+                        fontSize: width * 0.03,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
       onTap: () {

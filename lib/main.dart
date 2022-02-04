@@ -3,6 +3,7 @@ import 'package:cspc_recog/auth/auth.dart';
 import 'package:cspc_recog/calendar/calendar.dart';
 import 'package:cspc_recog/attendance/mainPage.dart';
 import 'package:cspc_recog/board/screen/screen_home.dart';
+import 'package:cspc_recog/common/custom_icons_icons.dart';
 import 'package:cspc_recog/providers/userData.dart';
 
 import 'package:flutter/material.dart';
@@ -28,6 +29,14 @@ class MainApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      theme: ThemeData(
+        fontFamily: "Pretendard",
+        scaffoldBackgroundColor: Color(0xffF2F2F2),
+        appBarTheme: AppBarTheme(
+          backgroundColor: Color(0xff86E3CE),
+          elevation: 0.0,
+        ),
+      ),
       localizationsDelegates: [
         GlobalMaterialLocalizations.delegate,
       ],
@@ -51,9 +60,11 @@ class MyMainPage extends StatefulWidget {
 class _MyMainPageState extends State<MyMainPage> {
   int _currentIndex = 0;
   GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  double height;
+  double statusBarHeight;
 
   final List<Widget> _children = [AttendancePage(), BoardPage(), Calendar()];
-  final List _title = ["Attendance", "Board", "Calendar"];
+  String _title = '';
   void _onTap(int index) {
     setState(() {
       _currentIndex = index;
@@ -62,20 +73,33 @@ class _MyMainPageState extends State<MyMainPage> {
 
   @override
   Widget build(BuildContext context) {
+    height = MediaQuery.of(context).size.height;
+    statusBarHeight = MediaQuery.of(context).padding.top;
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
-        title: _currentIndex != 2 ? Text(_title[_currentIndex]) : Text(''),
+        toolbarHeight: height * 0.14 - statusBarHeight,
+        title: Text("CSPC"), //TODO FIX
         automaticallyImplyLeading: false,
-        backgroundColor: Colors.transparent,
-        elevation: 0.0,
+        centerTitle: true,
+
+        titleTextStyle: TextStyle(
+          color: Colors.black,
+          fontSize: 29,
+          fontWeight: FontWeight.w800,
+        ),
+
         actions: [
           IconButton(
-              icon: Icon(Icons.account_circle_rounded),
-              onPressed: () => _scaffoldKey.currentState.openEndDrawer()),
+            icon: Icon(
+              CustomIcons.bell_icon,
+              color: Colors.white,
+            ),
+            onPressed: () {},
+            //onPressed: () => _scaffoldKey.currentState.openEndDrawer()),
+          ),
         ],
       ),
-      extendBodyBehindAppBar: true,
       body: _children[_currentIndex],
       bottomNavigationBar: SalomonBottomBar(
         //type: BottomNavigationBarType.fixed,
@@ -98,9 +122,6 @@ class _MyMainPageState extends State<MyMainPage> {
             selectedColor: Color(0xfffa897b),
           )
         ],
-      ),
-      endDrawer: Drawer(
-        child: ProfileDrawerPage(),
       ),
     );
   }

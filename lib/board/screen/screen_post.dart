@@ -1,5 +1,6 @@
 import 'package:cspc_recog/board/model/model_board.dart';
 import 'package:cspc_recog/board/screen/screen_edit_post.dart';
+import 'package:cspc_recog/common/custom_icons_icons.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
@@ -63,84 +64,113 @@ class _PostScreenState extends State<PostScreen> {
     double width = screenSize.width;
     double height = screenSize.height;
     print("4");
-    return SafeArea(
-      top: true,
-      left: true,
-      right: true,
-      bottom: false,
-      child: Scaffold(
-          appBar: AppBar(
-            title: Text(widget.boardName),
-            backgroundColor: ColorList[3],
+    return Scaffold(
+        backgroundColor: Colors.white,
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          leadingWidth: width * 0.15,
+          leading: IconButton(
+            icon: Icon(CustomIcons.before),
+            color: Colors.black,
+            iconSize: height * 0.025,
+            onPressed: () => Navigator.of(context).pop(),
           ),
-          resizeToAvoidBottomInset: true,
-          //backgroundColor: Colors.deepOrange,
-          body: Column(
+          actions: [
+            IconButton(
+                color: Colors.black45,
+                onPressed: () => postOption(context),
+                icon: Icon(Icons.more_horiz)),
+          ],
+          title: Column(
             children: [
-              Expanded(
-                child: SingleChildScrollView(
-                    child: Center(
-                  child: Column(
-                    //mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: <Widget>[
-                      //postView(widget.post, width, height),
-                      FutureBuilder(
-                          future: getImages(context, widget.id),
-                          builder:
-                              (BuildContext context, AsyncSnapshot snapshot) {
-                            if (snapshot.hasData == false) {
-                              return CircularProgressIndicator();
-                            } else if (snapshot.hasError) {
-                              return Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Text(
-                                  'Error: ${snapshot.error}',
-                                  style: TextStyle(fontSize: 15),
-                                ),
-                              );
-                            } else {
-                              images = snapshot.data; // 이거!!!! ㅠㅠ
-                              return Column(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: <Widget>[
-                                    postView(widget.post, width, height),
-                                  ]);
-                            }
-                          }),
-                      Divider(),
-                      FutureBuilder(
-                          future: getCommentList(context, widget.id),
-                          builder:
-                              (BuildContext context, AsyncSnapshot snapshot) {
-                            if (snapshot.hasData == false) {
-                              return CircularProgressIndicator();
-                            } else if (snapshot.hasError) {
-                              return Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Text(
-                                  'Error: ${snapshot.error}',
-                                  style: TextStyle(fontSize: 15),
-                                ),
-                              );
-                            } else {
-                              comments = snapshot.data; // 이거!!!! ㅠㅠ
-                              return Column(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: <Widget>[
-                                    commentListView(comments, width, height)
-                                  ]);
-                            }
-                          }),
-                      //commentListView(comments, width, height),
-                    ],
-                  ),
-                )),
+              Text(
+                widget.boardName,
+                style: TextStyle(
+                  color: Colors.black,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 25,
+                ),
               ),
-              commentFormView(width, height),
+              Text(
+                "CSPC",
+                style: TextStyle(
+                  color: Colors.black38,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 15,
+                ),
+              ),
             ],
-          )),
-    );
+          ),
+          centerTitle: true,
+        ),
+        resizeToAvoidBottomInset: true,
+        //backgroundColor: Colors.deepOrange,
+        body: Column(
+          children: [
+            Expanded(
+              child: SingleChildScrollView(
+                  child: Center(
+                child: Column(
+                  //mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    //postView(widget.post, width, height),
+                    FutureBuilder(
+                        future: getImages(context, widget.id),
+                        builder:
+                            (BuildContext context, AsyncSnapshot snapshot) {
+                          if (snapshot.hasData == false) {
+                            return CircularProgressIndicator();
+                          } else if (snapshot.hasError) {
+                            return Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Text(
+                                'Error: ${snapshot.error}',
+                                style: TextStyle(fontSize: 15),
+                              ),
+                            );
+                          } else {
+                            images = snapshot.data; // 이거!!!! ㅠㅠ
+                            return Column(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: <Widget>[
+                                  postView(widget.post, width, height),
+                                ]);
+                          }
+                        }),
+                    Divider(),
+                    FutureBuilder(
+                        future: getCommentList(context, widget.id),
+                        builder:
+                            (BuildContext context, AsyncSnapshot snapshot) {
+                          if (snapshot.hasData == false) {
+                            return CircularProgressIndicator();
+                          } else if (snapshot.hasError) {
+                            return Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Text(
+                                'Error: ${snapshot.error}',
+                                style: TextStyle(fontSize: 15),
+                              ),
+                            );
+                          } else {
+                            comments = snapshot.data; // 이거!!!! ㅠㅠ
+                            return Column(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: <Widget>[
+                                  commentListView(comments, width, height)
+                                ]);
+                          }
+                        }),
+                    //commentListView(comments, width, height),
+                  ],
+                ),
+              )),
+            ),
+            commentFormView(width, height),
+            Padding(padding: EdgeInsets.only(bottom: height * 0.02))
+          ],
+        ));
   }
 
   Widget postView(Post post, double width, double height) {
@@ -153,172 +183,158 @@ class _PostScreenState extends State<PostScreen> {
       postTime = new DateFormat('yy/MM/dd').format(post.createdTime);
     }
     return Container(
+        padding: EdgeInsets.symmetric(horizontal: width * 0.1),
         child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  Container(
+                    child: Text(
+                      post.title,
+                      textAlign: TextAlign.left,
+                      maxLines: 1,
+                      style: TextStyle(
+                        fontSize: height * 0.03,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+
+                  ///제목
+                ],
+              ),
               Container(
-                width: width * 0.8,
-                padding:
-                    EdgeInsets.fromLTRB(width * 0.024, width * 0.012, 0, 0),
+                alignment: Alignment.centerRight,
+                width: width * 0.9,
                 child: Text(
-                  post.title,
+                  post.nickName,
                   textAlign: TextAlign.left,
-                  maxLines: 1,
+                  maxLines: 2,
                   style: TextStyle(
-                    fontSize: width * 0.058,
-                    fontWeight: FontWeight.bold,
+                    fontSize: width * 0.040,
                   ),
                 ),
               ),
 
-              ///제목
+              ///작성자
               Container(
-                width: width * 0.1,
-                child: IconButton(
-                    color: Colors.black45,
-                    onPressed: () => postOption(context),
-                    icon: Icon(Icons.more_horiz)),
-              )
-            ],
-          ),
-          Container(
-            width: width * 0.9,
-            padding: EdgeInsets.fromLTRB(width * 0.024, width * 0.012, 0, 0),
-            child: Text(
-              '작성자:' + post.nickName,
-              textAlign: TextAlign.left,
-              maxLines: 2,
-              style: TextStyle(
-                fontSize: width * 0.040,
-              ),
-            ),
-          ),
-
-          ///작성자
-          Container(
-            width: width * 0.9,
-            padding: EdgeInsets.fromLTRB(width * 0.024, width * 0.012, 0, 0),
-            child: Text(
-              //post.createdTime.toString(),
-              postTime,
-              textAlign: TextAlign.left,
-              maxLines: 2,
-              style: TextStyle(
-                fontSize: width * 0.035,
-              ),
-            ),
-          ),
-
-          ///게시 날짜
-          Container(
-            height: height * 0.012,
-            width: width * 0.8,
-          ),
-          Container(
-            width: width * 0.9,
-            padding: EdgeInsets.all(width * 0.024),
-            child: Text(
-              post.contents,
-              textAlign: TextAlign.left,
-              style: TextStyle(
-                fontSize: width * 0.040,
-              ),
-            ),
-          ),
-
-          ///내용
-          //(post.hasImage>1)
-
-          /*(images.length > 1)
-                  ? ((images.length == 1)?
-              Container(
-                width: width*0.9,
-                child: Image.network(UrlPrefix.urls + images[0].imgUrl.substring(1)),
-              )
-                  :Container(
-                width:width*0.7,
-                child:SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-
-                  child: Row(
-                    //mainAxisSize: MainAxisSize.min,
-                    //crossAxisAlignment: CrossAxisAlignment.center,
-                    children: <Widget>[
-                      imageListView(images, width, height),
-                    ],
+                alignment: Alignment.centerRight,
+                width: width * 0.9,
+                child: Text(
+                  //post.createdTime.toString(),
+                  postTime,
+                  textAlign: TextAlign.left,
+                  maxLines: 2,
+                  style: TextStyle(
+                    fontSize: width * 0.035,
                   ),
                 ),
-              ))
-                  : Container(
-                  width: width*0.9,
-                  height:height*0.001
-              ),*/
-          (post.hasImage)
-              ? ((images.length == 1)
+              ),
+
+              ///게시 날짜
+              Container(
+                height: height * 0.012,
+                width: width * 0.8,
+              ),
+              Container(
+                alignment: Alignment.topLeft,
+                child: Text(
+                  post.contents,
+                  textAlign: TextAlign.left,
+                  style: TextStyle(
+                    fontSize: height * 0.025,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+              Padding(padding: EdgeInsets.only(top: height * 0.1)),
+
+              ///내용
+              /// TODO required placehold
+              (post.hasImage)
                   ? Container(
-                      width: width * 0.8,
-                      child: Image.network(
-                          UrlPrefix.urls + images[0].imgUrl.substring(1)),
+                      height: height * 0.2,
+                      child: SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Row(
+                          children: images
+                              .map((image) => Container(
+                                    padding:
+                                        EdgeInsets.only(right: width * 0.05),
+                                    decoration: BoxDecoration(),
+                                    child: imagesView(
+                                        image, height * 0.5, width * 0.5),
+                                  ))
+                              .toList(),
+                        ),
+                      ),
                     )
-                  : Container(
-                      width: width * 0.5,
-                      height: width * 0.5,
-                      child: Swiper(
-                          controller: _controller,
-                          loop: false,
-                          pagination: SwiperPagination(),
-                          itemCount: images.length,
-                          itemBuilder: (BuildContext context, int index) {
-                            return imagesView(images[index], width, height);
-                          }),
-                    ))
-              : Container(width: width * 0.9, height: height * 0.001),
+                  : Container(),
+              /*
+                  ? ((images.length == 1)
+                      ? Container(
+                          width: width * 0.8,
+                          child: Image.network(
+                              UrlPrefix.urls + images[0].imgUrl.substring(1)),
+                        )
+                      : Container(
+                          width: width * 0.5,
+                          height: width * 0.5,
+                          child: Swiper(
+                              controller: _controller,
+                              loop: false,
+                              pagination: SwiperPagination(),
+                              itemCount: images.length,
+                              itemBuilder: (BuildContext context, int index) {
+                                return imagesView(images[index], width, height);
+                              }),
+                        ))
+                  : Container(width: width * 0.9, height: height * 0.001),
+              */
+              ///이미지*/
+              Container(
+                width: width * 0.9,
+                //padding: EdgeInsets.only(left:width * 0.024),
+                child: LikeButton(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  size: buttonSize,
+                  circleColor: CircleColor(
+                      start: Color(0xfff551a2), end: Color(0xfffc1e86)),
+                  bubblesColor: BubblesColor(
+                    dotPrimaryColor: Color(0xfff551a2),
+                    dotSecondaryColor: Color(0xfffc1e86),
+                  ),
+                  likeBuilder: (bool isLiked) {
+                    return Icon(
+                      Icons.favorite,
+                      color: isLiked ? Colors.pinkAccent : Colors.grey,
+                      size: buttonSize * 0.8,
+                    );
+                  },
+                  likeCount: post.like,
+                  countBuilder: (int count, bool isLiked, String text) {
+                    var color = isLiked ? Colors.pinkAccent : Colors.grey;
+                    Widget result;
+                    if (count == 0) {
+                      result = Text(
+                        "0",
+                        style: TextStyle(color: color),
+                      );
+                    } else
+                      result = Text(
+                        text,
+                        style: TextStyle(color: color),
+                      );
+                    return result;
+                  },
+                  onTap: onLikeButtonTapped,
+                ),
+              )
 
-          ///이미지*/
-          Container(
-            width: width * 0.9,
-            //padding: EdgeInsets.only(left:width * 0.024),
-            child: LikeButton(
-              mainAxisAlignment: MainAxisAlignment.center,
-              size: buttonSize,
-              circleColor:
-                  CircleColor(start: Color(0xfff551a2), end: Color(0xfffc1e86)),
-              bubblesColor: BubblesColor(
-                dotPrimaryColor: Color(0xfff551a2),
-                dotSecondaryColor: Color(0xfffc1e86),
-              ),
-              likeBuilder: (bool isLiked) {
-                return Icon(
-                  Icons.favorite,
-                  color: isLiked ? Colors.pinkAccent : Colors.grey,
-                  size: buttonSize * 0.8,
-                );
-              },
-              likeCount: post.like,
-              countBuilder: (int count, bool isLiked, String text) {
-                var color = isLiked ? Colors.pinkAccent : Colors.grey;
-                Widget result;
-                if (count == 0) {
-                  result = Text(
-                    "0",
-                    style: TextStyle(color: color),
-                  );
-                } else
-                  result = Text(
-                    text,
-                    style: TextStyle(color: color),
-                  );
-                return result;
-              },
-              onTap: onLikeButtonTapped,
-            ),
-          )
-
-          ///좋아요
-        ]));
+              ///좋아요
+            ]));
   }
 
   postOption(mContext) {
@@ -460,28 +476,13 @@ class _PostScreenState extends State<PostScreen> {
     return !isLiked;
   }
 
-  Widget imageListView(List<ImageUrl> images, double width, double height) {
-    List<Widget> _children = [];
-    for (int i = 0; i < images.length; i++) {
-      if (i != 0) _children.add(Container(width: width * 0.01));
-      _children.add(imagesView(images[i], width, height));
-    }
-
-    return Container(
-        child: Row(
-      children: <Widget>[
-        Row(
-          children: _children,
-        )
-      ],
-    ));
-  }
-
   Widget imagesView(ImageUrl image, double width, double height) {
     return Container(
       width: width * 0.3,
       height: width * 0.3,
       decoration: BoxDecoration(
+          borderRadius: BorderRadius.all(Radius.circular(5)),
+          border: Border.all(width: 1, color: Color(0xFFD4D4D4)),
           image: DecorationImage(
               image: NetworkImage(UrlPrefix.urls + image.imgUrl.substring(1)),
               fit: BoxFit.cover)),
@@ -577,16 +578,18 @@ class _PostScreenState extends State<PostScreen> {
   Widget commentFormView(double width, double height) {
     //var formController = TextEditingController();
     return Container(
+        constraints:
+            BoxConstraints(maxHeight: height * 0.07, maxWidth: width * 0.9),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(30),
-          color: ColorList[3].withOpacity(0.2),
+          borderRadius: BorderRadius.circular(10),
+          color: Color(0xFFEDEDED),
           //color: Colors.white
         ),
         child: Row(
           children: [
             Container(
-                width: width * 0.8,
-                padding: EdgeInsets.fromLTRB(width * 0.04, 0, 0, 0),
+                width: width * 0.7,
+                padding: EdgeInsets.symmetric(horizontal: width * 0.05),
                 child: Form(
                     key: this.formKey,
                     child: Column(children: [
@@ -614,16 +617,9 @@ class _PostScreenState extends State<PostScreen> {
               minWidth: width * 0.3,
               height: height * 0.2,
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10)),
-              child: TextButton(
-                child: Text(
-                  '댓글 등록',
-                  style: TextStyle(
-                    color: ColorList[3],
-                    fontSize: width * 0.03,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+                  borderRadius: BorderRadius.circular(5)),
+              child: IconButton(
+                icon: Icon(CustomIcons.pen),
                 onPressed: () async {
                   if (formKey.currentState.validate()) {
                     print('form 완료');
