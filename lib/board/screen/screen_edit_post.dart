@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:cspc_recog/board/model/model_board.dart';
 import 'package:cspc_recog/board/screen/screen_post.dart';
+import 'package:cspc_recog/common/custom_icons_icons.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:cspc_recog/urls.dart';
@@ -78,7 +79,7 @@ class _EditPostScreenState extends State<EditPostScreen> {
         );
       });
       */
-
+      widget.post.hasImage = true;
       await Future.forEach(
           files,
           (file) async => {
@@ -109,39 +110,97 @@ class _EditPostScreenState extends State<EditPostScreen> {
     double height = screenSize.height;
 
     return Scaffold(
+        backgroundColor: Colors.white,
         resizeToAvoidBottomInset: false,
         appBar: AppBar(
-          title: Text(
-            "글 수정",
-            style: TextStyle(color: Colors.white),
+          centerTitle: true,
+          backgroundColor: Colors.transparent,
+          leadingWidth: width * 0.15,
+          leading: IconButton(
+            icon: Icon(CustomIcons.close),
+            color: Colors.black,
+            iconSize: height * 0.025,
+            onPressed: () => Navigator.of(context).pop(),
           ),
-          backgroundColor: ColorList[3],
+          title: Column(
+            children: [
+              Text(
+                "글 수정",
+                style: TextStyle(
+                  color: Colors.black,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 25,
+                ),
+              ),
+              Text(
+                widget.boardName,
+                style: TextStyle(
+                  color: Colors.black38,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 15,
+                ),
+              )
+            ],
+          ),
+          actions: [
+            TextButton(
+                onPressed: () async {
+                  if (formKey.currentState.validate()) {
+                    print('form 완료');
+                    this.formKey.currentState.save();
+                    await _editPost();
+                    print("1");
+                    editedPost = await getPost(context, widget.post.id);
+                    Navigator.pop(context, editedPost);
+                  } else {
+                    print('nono 안됨');
+                  }
+                },
+                child: Text(
+                  "완료",
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                    fontSize: 15,
+                  ),
+                ))
+          ],
         ),
-        body: SafeArea(
-            child: Column(children: [
+        body: Column(children: [
           Container(height: height * 0.01),
           Form(
             key: this.formKey,
             child: Column(
               children: [
                 Container(
-                  width: width * 0.96,
+                  width: width * 0.9,
                   decoration: BoxDecoration(
                     //color: Colors.black.withOpacity(0.7),
-                    border: Border.all(color: Colors.black54),
-                    borderRadius: BorderRadius.circular(5),
+                    border: Border(
+                        bottom: BorderSide(
+                      width: 1,
+                      color: Colors.black.withOpacity(0.5),
+                    )),
                   ),
                   child: Container(
                     //width: width*0.7,
                     padding: EdgeInsets.fromLTRB(width * 0.024, 0, 0, 0),
                     child: TextFormField(
                       initialValue: widget.post.title,
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 20,
+                      ),
                       inputFormatters: [
                         LengthLimitingTextInputFormatter(30),
                       ],
                       decoration: const InputDecoration(
                         border: InputBorder.none,
                         hintText: '제목',
+                        hintStyle: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 20,
+                        ),
                       ),
                       onSaved: (val) {
                         this.title = val;
@@ -160,17 +219,13 @@ class _EditPostScreenState extends State<EditPostScreen> {
                 ),
                 Container(height: height * 0.012),
                 Container(
-                  width: width * 0.96,
-                  decoration: BoxDecoration(
-                    //color: Colors.black.withOpacity(0.7),
-                    border: Border.all(color: Colors.black54),
-                    borderRadius: BorderRadius.circular(5),
-                  ),
+                  width: width * 0.9,
+                  height: height * 0.5,
                   child: Container(
                       padding: EdgeInsets.fromLTRB(width * 0.024, 0, 0, 0),
                       child: TextFormField(
                         initialValue: widget.post.contents,
-                        decoration: const InputDecoration(
+                        decoration: InputDecoration(
                           border: InputBorder.none,
                           hintText: '내용',
                         ),
@@ -190,81 +245,81 @@ class _EditPostScreenState extends State<EditPostScreen> {
                       ///내용
                       ),
                 ),
-                imagePreview(context),
-                Container(
-                  child: ButtonTheme(
-                    minWidth: width * 0.5,
-                    height: height * 0.05,
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10)),
-                    child: ElevatedButton(
-                        child: Text(
-                          '사진 업로드',
-                          style: TextStyle(color: Colors.white),
-                        ),
-                        style: ButtonStyle(
-                          minimumSize: MaterialStateProperty.all(
-                              Size(width * 0.9, height * 0.05)),
-                          backgroundColor:
-                              MaterialStateProperty.all<Color>(ColorList[3]),
-                        ),
-                        onPressed: () => takeImage(context)),
-                  ),
-                ),
+                imagePreview(context, height, width),
 
                 ///사진
               ],
             ),
           ),
-          ButtonTheme(
-            minWidth: width * 0.5,
-            height: height * 0.05,
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-            child: ElevatedButton(
-              child: Text(
-                '글 등록',
-                style: TextStyle(color: Colors.white),
-              ),
-              style: ButtonStyle(
-                minimumSize:
-                    MaterialStateProperty.all(Size(width * 0.9, height * 0.05)),
-                backgroundColor: MaterialStateProperty.all<Color>(ColorList[3]),
-              ),
-              onPressed: () async {
-                if (formKey.currentState.validate()) {
-                  print('form 완료');
-                  this.formKey.currentState.save();
-                  await _editPost();
-                  print("1");
-                  editedPost = await getPost(context, widget.post.id);
-                  Navigator.pop(context, editedPost);
-                } else {
-                  print('nono 안됨');
-                }
-              },
-            ),
-          ),
-        ])));
+        ]));
   }
 
-  Widget imagePreview(context) {
+  Widget imagePreview(context, double height, double width) {
     return Container(
       alignment: Alignment.bottomLeft,
-      padding: EdgeInsets.all(10),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween, // added line
-        mainAxisSize: MainAxisSize.min, // added line
-        children: <Widget>[
-          for (XFile file in files)
-            Image.file(
-              File(file.path),
-              scale: 0.3,
-              width: 50,
-              height: 50,
-            ),
-        ],
+      padding: EdgeInsets.symmetric(
+        horizontal: width * 0.1,
+        vertical: height * 0.01,
+      ),
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween, // added line
+            mainAxisSize: MainAxisSize.min, // added line
+            children: <Widget>[
+              GestureDetector(
+                child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.all(Radius.circular(5)),
+                      border: Border.all(width: 1, color: Color(0xFFD4D4D4)),
+                      color: Color(0xffE4E4E4),
+                    ),
+                    width: height * 0.15,
+                    height: height * 0.15,
+                    child: Icon(CustomIcons.camera)),
+                onTap: () => takeImage(context),
+              ),
+              ...files
+                  .map((file) => Padding(
+                        padding: EdgeInsets.only(left: width * 0.05),
+                        child: Stack(
+                          children: [
+                            Container(
+                              decoration: BoxDecoration(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(5)),
+                                border: Border.all(
+                                    width: 1, color: Color(0xFFD4D4D4)),
+                              ),
+                              width: height * 0.15,
+                              height: height * 0.15,
+                              child: Image.file(
+                                File(file.path),
+                              ),
+                            ),
+                            Positioned(
+                              right: 0,
+                              top: 0,
+                              child: CircleAvatar(
+                                radius: height * 0.02,
+                                backgroundColor: Color(0xFFD4D4D4),
+                                foregroundColor: Colors.black54,
+                                child: IconButton(
+                                    iconSize: height * 0.015,
+                                    onPressed: () {
+                                      setState(() {
+                                        files.remove(file);
+                                      });
+                                    },
+                                    icon: Icon(CustomIcons.close)),
+                              ),
+                            )
+                          ],
+                        ),
+                      ))
+                  .toList()
+            ]),
       ),
     );
   }
@@ -317,7 +372,7 @@ class _EditPostScreenState extends State<EditPostScreen> {
     List<XFile> imageFiles =
         await picker.pickMultiImage(maxWidth: 500, maxHeight: 500);
     setState(() {
-      this.files = imageFiles;
+      this.files.addAll(imageFiles);
     });
   }
 }
