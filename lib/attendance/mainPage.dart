@@ -1,4 +1,5 @@
 import 'package:cspc_recog/attendance/models/profile.dart';
+import 'package:cspc_recog/attendance/widget/circle_group.dart';
 import 'package:cspc_recog/common/custom_icons_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:circle_list/circle_list.dart';
@@ -227,55 +228,81 @@ class _AttendancePageState extends State<AttendancePage> {
   }
 
   Widget onlineProfileView(final List<ProfileModel> profileList) {
+    //final onlineProfileList = profileList;
     final onlineProfileList = profileList.where((e) => e.isOnline);
 
     return Stack(
       children: [
         Container(
           decoration: BoxDecoration(
-            color: colorMain.withOpacity(0.3),
+            color: Colors.black.withOpacity(0.05),
             borderRadius: BorderRadius.all(Radius.circular(10)),
           ),
           child: SizedBox(
-            height: height * 0.5,
-            width: width * 0.9,
-            child: Center(
-              child: CircleList(
-                initialAngle: 5,
-                origin: Offset(0, 0),
-                innerRadius: 0,
-                outerRadius: height * 0.25,
-                innerCircleRotateWithChildren: false,
-                children: [
-                  for (ProfileModel profile in onlineProfileList)
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Container(
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: colorMain,
-                          ),
-                          alignment: Alignment.center,
-                          width: height * 0.1,
-                          height: height * 0.1,
-                          child: profileImageView(
-                              profile.profileImageUrl, height * 0.1),
-                        ),
-                        Text(
-                          profile.nickName,
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontFamily: "Pretendard",
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
-                ],
-              ),
-            ),
-          ),
+              height: height * 0.5,
+              width: width * 0.9,
+              child: CircleGroup(
+                outPadding: width * 0.1,
+                childPadding: width * 0.06,
+                children: onlineProfileList.map((profile) {
+                  final ValueNotifier<bool> isClicked =
+                      ValueNotifier<bool>(false);
+
+                  return ValueListenableBuilder(
+                      valueListenable: isClicked,
+                      builder:
+                          (BuildContext context, bool value, Widget widget) {
+                        return GestureDetector(
+                            child: value == false
+                                ? CircleAvatar(
+                                    backgroundColor: Colors.white,
+                                    backgroundImage: profile.profileImageUrl ==
+                                            null
+                                        ? AssetImage(
+                                            'assets/images/profile.png')
+                                        : NetworkImage(UrlPrefix.urls.substring(
+                                                0, UrlPrefix.urls.length - 1) +
+                                            profile.profileImageUrl),
+                                  )
+                                : Stack(
+                                    fit: StackFit.expand,
+                                    children: [
+                                      Opacity(
+                                        opacity: 0.2,
+                                        child: CircleAvatar(
+                                            backgroundColor: Colors.white,
+                                            backgroundImage: profile
+                                                        .profileImageUrl ==
+                                                    null
+                                                ? AssetImage(
+                                                    'assets/images/profile.png')
+                                                : NetworkImage(UrlPrefix.urls
+                                                        .substring(
+                                                            0,
+                                                            UrlPrefix.urls
+                                                                    .length -
+                                                                1) +
+                                                    profile.profileImageUrl)),
+                                      ),
+                                      Align(
+                                        alignment: Alignment.center,
+                                        child: Text(
+                                          profile.nickName,
+                                          style: TextStyle(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                            onTap: () {
+                              isClicked.value = !isClicked.value;
+                              print(isClicked.value);
+                            });
+                      });
+                }).toList(),
+              )),
         ),
         Positioned(
           right: height * 0.01,
