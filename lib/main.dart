@@ -101,25 +101,28 @@ class _MyMainPageState extends State<MyMainPage> {
         ],
       ),
       body: _children[_currentIndex],
-      bottomNavigationBar: SalomonBottomBar(
+      bottomNavigationBar: BottomNavigationBar(
         //type: BottomNavigationBarType.fixed,
-        itemPadding: EdgeInsets.symmetric(vertical: 10, horizontal: 30),
+        //itemPadding: EdgeInsets.symmetric(vertical: 10, horizontal: 30),
         onTap: _onTap,
         currentIndex: _currentIndex,
+        selectedItemColor: Colors.black,
+        unselectedIconTheme: IconThemeData(size: height * 0.035),
+        selectedIconTheme: IconThemeData(size: height * 0.035),
+        showSelectedLabels: false,
+        showUnselectedLabels: false,
         items: [
-          new SalomonBottomBarItem(
-            icon: Icon(Icons.people),
-            title: Text('Attendance'),
-            selectedColor: Color(0xff86e3ce),
+          BottomNavigationBarItem(
+            label: '',
+            icon: Icon(CustomIcons.home),
           ),
-          new SalomonBottomBarItem(
-            icon: Icon(Icons.dashboard),
-            title: Text('Board'),
+          BottomNavigationBarItem(
+            label: '',
+            icon: Icon(CustomIcons.community),
           ),
-          new SalomonBottomBarItem(
-            icon: Icon(Icons.calendar_today),
-            title: Text('Calendar'),
-            selectedColor: Color(0xfffa897b),
+          BottomNavigationBarItem(
+            label: '',
+            icon: Icon(CustomIcons.calendar),
           )
         ],
       ),

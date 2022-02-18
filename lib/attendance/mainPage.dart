@@ -1,16 +1,12 @@
 import 'package:cspc_recog/attendance/models/profile.dart';
+import 'package:cspc_recog/attendance/widget/circle_group.dart';
 import 'package:cspc_recog/common/custom_icons_icons.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_icons/flutter_icons.dart';
-import 'dart:math';
 import 'package:circle_list/circle_list.dart';
 import '../urls.dart';
 
 final Color colorMain = Color(0xff86E3CE);
-final Color colorProfileBox = Color(0x4D86E3CE);
 final Color colorSub = Color(0xffFFDD94);
-final fontColor = Colors.grey[600];
 
 class AttendancePage extends StatefulWidget {
   @override
@@ -21,23 +17,10 @@ class _AttendancePageState extends State<AttendancePage> {
   ProfileModel myProfile;
   double height;
   double width;
-  String _title = '';
+
   @override
   void initState() {
     super.initState();
-
-    myProfile = ProfileModel.fromJson({
-      "id": 1,
-      "group_id": {"id": 1, "group_name": "cspc", "group_admin_id": 1},
-      "nick_name": "jin yong",
-      "last_visit_time": "2021-08-25T16:02:59.183817+09:00",
-      "visit_time_sum": "1 06:00:00",
-      "is_online": true,
-      "is_admin": true,
-      "profile_image":
-          "/media/image/profile/1/image_picker266038817043360961.jpg",
-      "user_id": 1
-    });
   }
 
   @override
@@ -50,7 +33,6 @@ class _AttendancePageState extends State<AttendancePage> {
             future: getProfileList(context),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.done) {
-                print(_title);
                 List<ProfileModel> profileList = snapshot.data;
                 return RefreshIndicator(
                   onRefresh: () async {
@@ -59,7 +41,7 @@ class _AttendancePageState extends State<AttendancePage> {
                   child: Container(
                     child: Column(
                       children: [
-                        rankingLayout(profileList),
+                        topLayout(profileList),
                         onlineProfileView(profileList),
                       ],
                     ),
@@ -74,7 +56,7 @@ class _AttendancePageState extends State<AttendancePage> {
     );
   }
 
-  Widget rankingLayout(final List<ProfileModel> profileList) {
+  Widget topLayout(final List<ProfileModel> profileList) {
     profileList.sort((b, a) => a.visitTimeSum.compareTo(b.visitTimeSum));
     final ProfileModel winnerProfile = profileList.first;
     return Container(
@@ -174,30 +156,38 @@ class _AttendancePageState extends State<AttendancePage> {
   }
 
   Widget woriContent() {
-    return Container(
-      alignment: Alignment.center,
-      padding: EdgeInsets.symmetric(
-        vertical: height * 0.02,
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Icon(
-            CustomIcons.wori2,
-            color: Colors.white,
-            size: width * 0.1,
-          ),
-          Padding(
-            padding: EdgeInsets.only(left: width * 0.06, top: height * 0.015),
-            child: Text(
-              "우리",
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
+    return GestureDetector(
+      onTap: () => showDialog(
+          context: context,
+          builder: (BuildContext context) => AlertDialog(
+                title: Text("Success"),
+                content: Text("Save successfully"),
+              )),
+      child: Container(
+        alignment: Alignment.center,
+        padding: EdgeInsets.symmetric(
+          vertical: height * 0.02,
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Icon(
+              CustomIcons.wori2,
+              color: Colors.white,
+              size: width * 0.1,
             ),
-          )
-        ],
+            Padding(
+              padding: EdgeInsets.only(left: width * 0.06, top: height * 0.015),
+              child: Text(
+                "우리",
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            )
+          ],
+        ),
       ),
     );
   }
@@ -238,55 +228,81 @@ class _AttendancePageState extends State<AttendancePage> {
   }
 
   Widget onlineProfileView(final List<ProfileModel> profileList) {
+    //final onlineProfileList = profileList;
     final onlineProfileList = profileList.where((e) => e.isOnline);
 
     return Stack(
       children: [
         Container(
           decoration: BoxDecoration(
-            color: colorMain.withOpacity(0.3),
+            color: Colors.black.withOpacity(0.05),
             borderRadius: BorderRadius.all(Radius.circular(10)),
           ),
           child: SizedBox(
-            height: height * 0.5,
-            width: width * 0.9,
-            child: Center(
-              child: CircleList(
-                initialAngle: 5,
-                origin: Offset(0, 0),
-                innerRadius: 0,
-                outerRadius: height * 0.25,
-                innerCircleRotateWithChildren: false,
-                children: [
-                  for (ProfileModel profile in onlineProfileList)
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Container(
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: colorMain,
-                          ),
-                          alignment: Alignment.center,
-                          width: height * 0.1,
-                          height: height * 0.1,
-                          child: profileImageView(
-                              profile.profileImageUrl, height * 0.1),
-                        ),
-                        Text(
-                          profile.nickName,
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontFamily: "Pretendard",
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
-                ],
-              ),
-            ),
-          ),
+              height: height * 0.5,
+              width: width * 0.9,
+              child: CircleGroup(
+                outPadding: width * 0.1,
+                childPadding: width * 0.06,
+                children: onlineProfileList.map((profile) {
+                  final ValueNotifier<bool> isClicked =
+                      ValueNotifier<bool>(false);
+
+                  return ValueListenableBuilder(
+                      valueListenable: isClicked,
+                      builder:
+                          (BuildContext context, bool value, Widget widget) {
+                        return GestureDetector(
+                            child: value == false
+                                ? CircleAvatar(
+                                    backgroundColor: Colors.white,
+                                    backgroundImage: profile.profileImageUrl ==
+                                            null
+                                        ? AssetImage(
+                                            'assets/images/profile.png')
+                                        : NetworkImage(UrlPrefix.urls.substring(
+                                                0, UrlPrefix.urls.length - 1) +
+                                            profile.profileImageUrl),
+                                  )
+                                : Stack(
+                                    fit: StackFit.expand,
+                                    children: [
+                                      Opacity(
+                                        opacity: 0.2,
+                                        child: CircleAvatar(
+                                            backgroundColor: Colors.white,
+                                            backgroundImage: profile
+                                                        .profileImageUrl ==
+                                                    null
+                                                ? AssetImage(
+                                                    'assets/images/profile.png')
+                                                : NetworkImage(UrlPrefix.urls
+                                                        .substring(
+                                                            0,
+                                                            UrlPrefix.urls
+                                                                    .length -
+                                                                1) +
+                                                    profile.profileImageUrl)),
+                                      ),
+                                      Align(
+                                        alignment: Alignment.center,
+                                        child: Text(
+                                          profile.nickName,
+                                          style: TextStyle(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                            onTap: () {
+                              isClicked.value = !isClicked.value;
+                              print(isClicked.value);
+                            });
+                      });
+                }).toList(),
+              )),
         ),
         Positioned(
           right: height * 0.01,

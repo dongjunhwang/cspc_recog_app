@@ -178,9 +178,9 @@ class _PostScreenState extends State<PostScreen> {
     SwiperController _controller = SwiperController();
     String postTime;
     if (DateTime.now().difference(post.createdTime).inDays < 365) {
-      postTime = new DateFormat('MM/dd kk:mm').format(post.createdTime);
+      postTime = new DateFormat('yy.MM.dd\nkk:mm').format(post.createdTime);
     } else {
-      postTime = new DateFormat('yy/MM/dd').format(post.createdTime);
+      postTime = new DateFormat('yy.MM.dd').format(post.createdTime);
     }
     return Container(
         padding: EdgeInsets.symmetric(horizontal: width * 0.1),
@@ -213,7 +213,8 @@ class _PostScreenState extends State<PostScreen> {
                   textAlign: TextAlign.left,
                   maxLines: 2,
                   style: TextStyle(
-                    fontSize: width * 0.040,
+                    fontSize: width * 0.045,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
               ),
@@ -225,7 +226,7 @@ class _PostScreenState extends State<PostScreen> {
                 child: Text(
                   //post.createdTime.toString(),
                   postTime,
-                  textAlign: TextAlign.left,
+                  textAlign: TextAlign.right,
                   maxLines: 2,
                   style: TextStyle(
                     fontSize: width * 0.035,
@@ -477,18 +478,32 @@ class _PostScreenState extends State<PostScreen> {
   }
 
   Widget imagesView(ImageUrl image, double width, double height) {
-    return Container(
-      width: width * 0.3,
-      height: width * 0.3,
-      decoration: BoxDecoration(
-          borderRadius: BorderRadius.all(Radius.circular(5)),
-          border: Border.all(width: 1, color: Color(0xFFD4D4D4)),
-          image: DecorationImage(
-              image: NetworkImage(UrlPrefix.urls + image.imgUrl.substring(1)),
-              fit: BoxFit.cover)),
+    return GestureDetector(
+        child: Container(
+          width: width * 0.3,
+          height: width * 0.3,
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.all(Radius.circular(5)),
+              border: Border.all(width: 1, color: Color(0xFFD4D4D4)),
+              image: DecorationImage(
+                  image:
+                      NetworkImage(UrlPrefix.urls + image.imgUrl.substring(1)),
+                  fit: BoxFit.cover)),
 
-      //Image.network(UrlPrefix.urls + image.imgUrl.substring(1))
-    );
+          //Image.network(UrlPrefix.urls + image.imgUrl.substring(1))
+        ),
+        onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => Container(
+                        decoration: BoxDecoration(
+                          image: DecorationImage(
+                              image: NetworkImage(
+                                  UrlPrefix.urls + image.imgUrl.substring(1)),
+                              fit: BoxFit.cover),
+                        ),
+                      )),
+            ));
   }
 
   Widget commentListView(List<Comment> comments, double width, double height) {
